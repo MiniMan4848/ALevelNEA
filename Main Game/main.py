@@ -22,12 +22,10 @@ GothamBlackSmaller = pygame.font.Font("Assets/Gotham Black.ttf", 50)
 
 class Button:
     # Constructor
-    def __init__(self, text:str, x:int, y:int, width:int, height:int, colour:tuple, hovercol:tuple, enabled:bool):
+    def __init__(self, text:str, x:int, y:int, colour:tuple, hovercol:tuple, enabled:bool):
         self.text = text
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
         self.colour = colour
         self.hovercol = hovercol
         self.enabled = enabled
@@ -36,41 +34,48 @@ class Button:
         # text, anti alisasing, colour
         buttonText = GothamBlackSmaller.render(self.text, True, self.colour)
 
-        # x and y coordinate, width and height for button
-        buttonRect = pygame.rect.Rect((self.x,self.y), (self.width,self.height))
+        # x and y coordinate, width and height for button. Fits text. +n is padding
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + 25, buttonText.get_height() + 10))
+
+        # make text center of the rect
+        textx = self.x + (buttonRect.width - buttonText.get_width()) // 2
+        texty = self.y + (buttonRect.height - buttonText.get_height()) // 2
 
         # surface, colour, rectangle to draw, width (0 fills, >0 line thickness), curve edge radius
         # Hollow button style, border same colour as text
         pygame.draw.rect(screen, self.colour, buttonRect, 2, 0)
 
-        # added numbers are the padding?
-        screen.blit(buttonText, (self.x+3, self.y))
-        return False
+        screen.blit(buttonText, (textx, texty))
+
+    def isHovered(self) -> bool:
+        mx, my = pygame.mouse.get_pos()
+
+        buttonText = GothamBlackSmaller.render(self.text, True, self.colour)
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + 25, buttonText.get_height() + 10))
+        buttonTextHover = GothamBlackSmaller.render(self.text, True, self.hovercol)
+
+        textx = self.x + (buttonRect.width - buttonText.get_width()) // 2
+        texty = self.y + (buttonRect.height - buttonText.get_height()) // 2
+
+        # checking if the mouse is over the button/rect
+        if buttonRect.collidepoint(mx, my) and self.enabled == True:
+            pygame.draw.rect(screen, self.hovercol, buttonRect, 2, 0)
+            screen.blit(buttonTextHover, (textx, texty))
+            return True
+        else:
+            return False
 
     def isClicked(self) -> bool:
         mx, my = pygame.mouse.get_pos()
         # checking for left click
         leftClick = pygame.mouse.get_pressed()[0]
-        buttonRect = pygame.rect.Rect((self.x,self.y), (self.width,self.height))
+
+        buttonText = GothamBlackSmaller.render(self.text, True, self.colour)
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + 25, buttonText.get_height() + 10))
+
         if leftClick and buttonRect.collidepoint(mx,my) and self.enabled == True:
             return True
         else:
-            return False
-    
-    def isHovered(self) -> bool:
-        mx, my = pygame.mouse.get_pos()
-
-        buttonRect = pygame.rect.Rect((self.x,self.y), (self.width,self.height))
-        buttonText = GothamBlackSmaller.render(self.text, True, self.colour)
-        buttonTextHover = GothamBlackSmaller.render(self.text, True, self.hovercol)
-
-        # checking if the mouse is over the button/rect
-        if buttonRect.collidepoint(mx, my) and self.enabled == True:
-            pygame.draw.rect(screen, self.hovercol, buttonRect, 1, 0)
-            screen.blit(buttonTextHover, (self.x+3, self.y))
-            return True
-        else:
-            pass
             return False
 
 def gameLoop():
@@ -91,7 +96,7 @@ def gameLoop():
 def mainMenu():
 
     # All instances of main menu buttons
-    playbutton = Button("PLAY", 620, 155, 141, 55, (242, 225, 36), (255, 192, 20), True)
+    playbutton = Button("PLAY", 620, 155, (242, 225, 36), (255, 192, 20), True)
 
     # Loop for the main menu
     while True:
