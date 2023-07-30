@@ -16,6 +16,13 @@ pygame.display.set_caption("Blob Dodge - Main Menu")
 # Fonts
 GothamBlackHeader = pygame.font.Font("assets/Gotham Black.ttf", 100)
 GothamBlackSmaller = pygame.font.Font("assets/Gotham Black.ttf", 50)
+GothamBlackTiny = pygame.font.Font("assets/Gotham Black.ttf", 20)
+
+class Popup:
+    def __init__(self, title:str):
+        self.title = title
+        def drawPopup(self):
+            pass
 
 def gameLoop():
     # Loop for the game loop
@@ -38,6 +45,7 @@ def mainMenu():
 
     # All instances of main menu buttons
     playbutton = Button("PLAY", 620, 155, (242, 225, 36), (255, 192, 20), True)
+    settingsbutton = Button("SETTINGS", 570, 240, (242, 225, 36), (255, 192, 20), True)
 
     # Loop for the main menu
     while True:
@@ -46,6 +54,10 @@ def mainMenu():
             if event.type == pygame.MOUSEBUTTONDOWN and playbutton.isClicked():
                 pygame.display.set_caption("Blob Dodge - Game Loop")
                 gameLoop()
+            if event.type == pygame.MOUSEBUTTONDOWN and settingsbutton.isClicked():
+                # where the settings popup will be created
+                print ("Settings button works")
+
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -54,6 +66,8 @@ def mainMenu():
         screen.fill((40,43,48))
         playbutton.drawButton()
         playbutton.isHovered()
+        settingsbutton.drawButton()
+        settingsbutton.isHovered()
 
         # Puts the main menu text at the top of the screen
         MMtext = GothamBlackHeader.render("MAIN MENU", True, "white")
