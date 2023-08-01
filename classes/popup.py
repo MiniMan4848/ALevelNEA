@@ -24,8 +24,12 @@ class Popup():
         # Importing the button class to be used as a back button
         from classes.button import BackButton
 
+        popupwidth, popupheight = 455, 410
+        popupx = ((width - popupwidth)//2) + 5
+        popupy = (height - popupheight)//22
+        
         # +n is padding
-        back = BackButton("BACK", ((width - 455) // 2) + 15, ((height - 410) // 2) - 295, (207, 17, 4), (235, 64, 52), fonts["Tiny"], 10, 5, True)
+        back = BackButton("BACK", popupx + 10, popupy + 10, (207, 17, 4), (235, 64, 52), fonts["Tiny"], 10, 5, True)
         back.drawButton()
         back.isHovered()
         # Go back to the main menu if the back button is pressed
