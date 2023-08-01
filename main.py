@@ -47,9 +47,9 @@ def mainMenu():
     helpflag = False
 
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
-    playbutton = Button("PLAY", None, 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    settingsbutton = Button("SETTINGS", None, 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    helpbutton = Button("HELP", None, 360, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
+    playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    helpbutton = Button("HELP", 360, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
     # Loop for the main menu
     while True:
@@ -97,8 +97,8 @@ def mainMenu():
             SettingsPopup.backButton()
             
             # Disable the play and settings button when the popup is open
-            playbutton = Button("PLAY", 620, 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsbutton = Button("SETTINGS", 570, 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
 
         if helpflag == True:
             from classes.popup import Popup
@@ -108,8 +108,8 @@ def mainMenu():
             HelpPopup.backButton()
 
             # Disable the play and settings button when the popup is open
-            playbutton = Button("PLAY", 620, 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsbutton = Button("SETTINGS", 570, 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
