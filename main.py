@@ -46,10 +46,10 @@ def mainMenu():
     settingsflag = False
     helpflag = False
 
-    # All instances of main menu buttons
-    playbutton = Button("PLAY", 620, 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    settingsbutton = Button("SETTINGS", 570, 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    helpbutton = Button("HELP", 670, 360, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
+    # All instances of main menu buttons, x pos is None because automatically centered on that axis
+    playbutton = Button("PLAY", None, 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    settingsbutton = Button("SETTINGS", None, 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    helpbutton = Button("HELP", None, 360, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
     # Loop for the main menu
     while True:
