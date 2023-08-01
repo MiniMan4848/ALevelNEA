@@ -3,9 +3,8 @@ from main import *
 
 class Button:
     # Constructor
-    def __init__(self, text:str, x:int, y:int, colour:tuple, hovercol:tuple, font:str, paddingx:int, paddingy:int, enabled:bool):
+    def __init__(self, text:str, y:int, colour:tuple, hovercol:tuple, font:str, paddingx:int, paddingy:int, enabled:bool):
         self.text = text
-        self.x = x
         self.y = y
         self.colour = colour
         self.hovercol = hovercol
