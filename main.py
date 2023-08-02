@@ -5,13 +5,13 @@ import sys
 # Initialise pygame
 pygame.init()
 
-# Creating the game window
+# Creating the game window, 32:9 aspect ratio
 screen = pygame.display.set_mode()
 width, height = screen.get_size()
 screen = pygame.display.set_mode((width, height/2))
 
 # Constants
-BGCOL = (40,43,48)
+BGCOL = (32,33,36)
 
 # Setting the caption on startup
 pygame.display.set_caption("Blob Dodge - Main Menu")
@@ -31,8 +31,9 @@ def gameLoop() -> None:
                 pygame.quit()
                 sys.exit()
 
-        # Fills the screen grey 
+        # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
+        floor()
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
@@ -71,9 +72,10 @@ def mainMenu() -> None:
                 pygame.quit()
                 sys.exit()
 
-        # Fills the screen grey 
+        # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
-        
+        floor()
+
         # Calling the drawing and hovering methods to the play, help and settings button
         playbutton.drawButton()
         playbutton.isHovered()
@@ -134,6 +136,9 @@ def highScore(helpbutton) -> None:
 
     # Closes the file once the operation has been completed
     file.close()
+
+def floor(): 
+    pygame.draw.line(screen, (172, 172, 172), (0,331), (1920, 331), 2) 
 
 if __name__ == "__main__":
     mainMenu()
