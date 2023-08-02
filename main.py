@@ -23,7 +23,7 @@ fonts = {
     "Tiny":pygame.font.Font("assets/Gotham Black.ttf", 20)
 }
             
-def gameLoop():
+def gameLoop() -> None:
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -38,7 +38,7 @@ def gameLoop():
         pygame.time.Clock().tick(60)
         pygame.display.update()
 
-def mainMenu():
+def mainMenu() -> None:
     # importing classes used in the main menu to avoid a circular import error
     from classes.button import Button
 
@@ -49,7 +49,7 @@ def mainMenu():
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
     playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
     settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    helpbutton = Button("HELP", 360, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
+    helpbutton = Button("HELP", 375, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
     # Loop for the main menu
     while True:
@@ -64,7 +64,7 @@ def mainMenu():
                 settingsflag = True
 
             # If the help button is pressed, open the help window
-            if event.type == pygame.MOUSEBUTTONDOWN and helpbutton.isClicked():
+            if event.type == pygame.MOUSEBUTTONDOWN and helpbutton.isClicked(): 
                 helpflag = True
 
             if event.type == pygame.QUIT:
@@ -74,7 +74,7 @@ def mainMenu():
         # Fills the screen grey 
         screen.fill(BGCOL)
         
-        # Calling the drawing and hovering methods to the play and settings button
+        # Calling the drawing and hovering methods to the play, help and settings button
         playbutton.drawButton()
         playbutton.isHovered()
 
@@ -88,6 +88,8 @@ def mainMenu():
         MMtext = fonts["Header"].render("MAIN MENU", True, "white")
         main_menu_text_rect = MMtext.get_rect(center=(width // 2, height // 12))
         screen.blit(MMtext, (main_menu_text_rect))
+
+        highScore(helpbutton)
 
         if settingsflag == True:
             from classes.popup import Popup
@@ -114,6 +116,24 @@ def mainMenu():
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
+
+def highScore(helpbutton) -> None:
+    # Opens and reads the highscore text file
+    file = open("highscore.txt", "r")
+    fileVal = file.read()
+
+    # Gets the highscore text and the value of the file
+    highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (242, 225, 36))
+    
+    # Get the position to draw the high score above the help button, 360 bc that's
+    helpbuttonCenter = (width // 2, helpbutton.y)
+    highscorePos = (helpbuttonCenter[0] - highScoreText.get_width() // 2, helpbuttonCenter[1] - highScoreText.get_height() - 10)
+
+    # Draws the highscore text and value of the file to the screen
+    screen.blit(highScoreText, highscorePos)
+
+    # Closes the file once the operation has been completed
+    file.close()
 
 if __name__ == "__main__":
     mainMenu()
