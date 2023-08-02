@@ -18,9 +18,9 @@ pygame.display.set_caption("Blob Dodge - Main Menu")
 
 # Fonts
 fonts = {
-    "Header":pygame.font.Font("assets/Gotham Black.ttf", 100),
-    "Smaller":pygame.font.Font("assets/Gotham Black.ttf", 50),
-    "Tiny":pygame.font.Font("assets/Gotham Black.ttf", 20)
+    "Header":pygame.font.Font("assets/fonts/Gotham Black.ttf", 100),
+    "Smaller":pygame.font.Font("assets/fonts/Gotham Black.ttf", 50),
+    "Tiny":pygame.font.Font("assets/fonts/Gotham Black.ttf", 20)
 }
             
 def gameLoop() -> None:
