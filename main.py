@@ -1,6 +1,7 @@
 # Importing modules
 import pygame
 import sys
+import random
 
 # Initialise pygame
 pygame.init()
@@ -47,6 +48,16 @@ def mainMenu() -> None:
     settingsflag = False
     helpflag = False
 
+    # Loading the images for the idle aniamtion
+    openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
+    blink = pygame.image.load("assets/idle/idle2.png").convert_alpha()
+    frames = [openEyes, blink]
+    # Get time in ms
+    timer = pygame.time.get_ticks()
+    # Interval between blinks in ms
+    interval = 10000
+    frameIndex = 0
+
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
     playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
     settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
@@ -75,6 +86,27 @@ def mainMenu() -> None:
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
         floor()
+        
+        # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
+        # Gets the current time in ms
+        currentTime = pygame.time.get_ticks()
+
+        # Chekcs if characters eyes are open, and if enough time has passed since last blink, close eyes
+        if frameIndex == 0 and currentTime - timer >= interval:
+            # Switch to the next frame
+            frameIndex = 1
+            # Set the interval for the next blink, 5 to 15 secs
+            interval = random.randint(5000, 15000)
+            # Update the timer to the current time to calculate time for next blink
+            timer = currentTime
+
+        # Check if the time since the last update is greater than the interval for blunk eyes, open eyes after 150ms
+        if frameIndex == 1 and currentTime - timer >= 150:
+            # Then switches to the open eyes frame where it loops back to the first if statement
+            frameIndex = 0
+
+        # Draws the frame to the screen
+        screen.blit(frames[frameIndex], (400, 331 - frames[frameIndex].get_height()))
 
         # Calling the drawing and hovering methods to the play, help and settings button
         playbutton.drawButton()
@@ -138,7 +170,7 @@ def highScore(helpbutton) -> None:
     file.close()
 
 def floor(): 
-    pygame.draw.line(screen, (172, 172, 172), (0,331), (1920, 331), 2) 
+    pygame.draw.line(screen, (172, 172, 172), (0,331), (width, 331), 2) 
 
 if __name__ == "__main__":
     mainMenu()
