@@ -25,6 +25,18 @@ fonts = {
 }
             
 def gameLoop() -> None:
+    # Load and store images for running animation
+    run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
+    run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
+    frames = [run1, run2]
+
+    # Get time in ms
+    timer = pygame.time.get_ticks()
+
+    # Interval between frame switches and the frame index
+    interval = 60
+    frameIndex = 0
+
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -35,6 +47,15 @@ def gameLoop() -> None:
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
         floor()
+
+        # Logic for running animation
+        currentTime = pygame.time.get_ticks()
+        if currentTime - timer >= interval:
+            frameIndex = (frameIndex + 1) % len(frames)
+            timer = currentTime
+
+        # Draws the frame to the screen
+        screen.blit(frames[frameIndex], (400, 331 - frames[frameIndex].get_height()))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
@@ -48,12 +69,14 @@ def mainMenu() -> None:
     settingsflag = False
     helpflag = False
 
-    # Loading the images for the idle aniamtion
-    openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
-    blink = pygame.image.load("assets/idle/idle2.png").convert_alpha()
+    # Loading and store images for the idle aniamtion
+    openEyes = pygame.image.load("assets/run/run1.png").convert_alpha()
+    blink = pygame.image.load("assets/run/run1.png").convert_alpha()
     frames = [openEyes, blink]
+
     # Get time in ms
     timer = pygame.time.get_ticks()
+
     # Interval between blinks in ms
     interval = 10000
     frameIndex = 0
@@ -119,7 +142,7 @@ def mainMenu() -> None:
         helpbutton.isHovered()
 
         # Puts the main menu text at the top of the screen
-        MMtext = fonts["Header"].render("MAIN MENU", True, "white")
+        MMtext = fonts["Header"].render("MAIN MENU", True, ("white"))
         main_menu_text_rect = MMtext.get_rect(center=(width // 2, height // 12))
         screen.blit(MMtext, (main_menu_text_rect))
 
@@ -157,7 +180,7 @@ def highScore(helpbutton) -> None:
     fileVal = file.read()
 
     # Gets the highscore text and the value of the file
-    highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (242, 225, 36))
+    highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (89, 186, 255))
     
     # Get the position to draw the high score above the help button, 360 bc that's
     helpbuttonCenter = (width // 2, helpbutton.y)
