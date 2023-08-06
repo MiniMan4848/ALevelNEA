@@ -2,6 +2,7 @@
 import pygame
 import sys
 import random
+import math
 
 # Initialise pygame
 pygame.init()
@@ -34,8 +35,11 @@ def gameLoop() -> None:
     timer = pygame.time.get_ticks()
 
     # Interval between frame switches and the frame index
-    interval = 60
+    interval = 100
     frameIndex = 0
+
+    # For the scrolling background
+    scroll = 0
 
     # Loop for the game loop
     while True:
@@ -46,8 +50,33 @@ def gameLoop() -> None:
 
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
-        floor()
 
+        # Background stuff
+        # As there are going to be multiple images, I am storing them in a dict
+        imgOne = pygame.image.load("assets/background/stars.png").convert_alpha()
+
+        # Scaling the image and putting it on screen
+        scaledImage = pygame.transform.scale(imgOne, (330, 330))
+
+        # See how many images I am going to need
+        imageWidth = scaledImage.get_width()
+        howMany = (math.ceil((int(width)/int(imageWidth)))) + 1
+
+        # Scroll background speed
+        scroll -= 10
+
+        # Reset scroll
+        # Checks if image is off screen, scroll is a negative value so use absolute
+        if abs(scroll) > imageWidth:
+            scroll = 0
+
+        for i in range (0, howMany):
+            # x coordinate can't always be 0, needs offsetting by width of image.
+            screen.blit(scaledImage, (i * imageWidth + scroll, 0))
+
+        # Drawing the floor
+        floor()
+        
         # Logic for running animation
         currentTime = pygame.time.get_ticks()
         if currentTime - timer >= interval:
@@ -70,15 +99,15 @@ def mainMenu() -> None:
     helpflag = False
 
     # Loading and store images for the idle aniamtion
-    openEyes = pygame.image.load("assets/run/run1.png").convert_alpha()
-    blink = pygame.image.load("assets/run/run1.png").convert_alpha()
+    openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
+    blink = pygame.image.load("assets/idle/idle2.png").convert_alpha()
     frames = [openEyes, blink]
 
     # Get time in ms
     timer = pygame.time.get_ticks()
 
     # Interval between blinks in ms
-    interval = 10000
+    interval = 0
     frameIndex = 0
 
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
@@ -118,8 +147,8 @@ def mainMenu() -> None:
         if frameIndex == 0 and currentTime - timer >= interval:
             # Switch to the next frame
             frameIndex = 1
-            # Set the interval for the next blink, 5 to 15 secs
-            interval = random.randint(5000, 15000)
+            # Set the interval for the next blink, 1 to 10 secs
+            interval = random.randint(1000, 10000)
             # Update the timer to the current time to calculate time for next blink
             timer = currentTime
 
