@@ -38,8 +38,9 @@ def gameLoop() -> None:
     interval = 100
     frameIndex = 0
 
-    # For the scrolling background
+    # For the scrolling background and blobs
     scroll = 0
+    moveSpeed = 0
 
     # Loop for the game loop
     while True:
@@ -71,8 +72,17 @@ def gameLoop() -> None:
             scroll = 0
 
         for i in range (0, howMany):
-            # x coordinate can't always be 0, needs offsetting by width of image.
+            # x coordinate can't always be 0, needs offsetting by width of image, hence imageWidth
             screen.blit(scaledImage, (i * imageWidth + scroll, 0))
+
+        # Blob stuff
+        blob = pygame.image.load("assets/blob/blob.png")
+
+        # Using 331 as that is where the floor starts
+        heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
+
+        moveSpeed -= 5
+        screen.blit(blob, (width + moveSpeed, heights[0]))
 
         # Drawing the floor
         floor()
@@ -226,4 +236,3 @@ def floor():
 
 if __name__ == "__main__":
     mainMenu()
-    
