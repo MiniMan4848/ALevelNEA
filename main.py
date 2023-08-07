@@ -176,7 +176,6 @@ def mainMenu() -> None:
         screen.blit(MMtext, (main_menu_text_rect))
 
         highScore(helpbutton)
-        test()
 
         if settingsflag == True:
             from classes.popup import Popup
@@ -224,9 +223,6 @@ def highScore(helpbutton) -> None:
 
 def floor(): 
     pygame.draw.line(screen, (172, 172, 172), (0,331), (width, 331), 2) 
-
-def test():
-    print ("Please work, main branch.")
 
 if __name__ == "__main__":
     mainMenu()
