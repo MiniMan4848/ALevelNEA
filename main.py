@@ -38,9 +38,12 @@ def gameLoop() -> None:
     interval = 100
     frameIndex = 0
 
-    # For the scrolling background and blobs
+    # For the scrolling background
     scroll = 0
+
+    # Blob speed and randomly spawning blob variables
     moveSpeed = 0
+    randomHeightIndex = random.randint(0,2)
 
     # Loop for the game loop
     while True:
@@ -52,7 +55,7 @@ def gameLoop() -> None:
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
 
-        # Background stuff
+        # Background stuff #
         # As there are going to be multiple images, I am storing them in a dict
         imgOne = pygame.image.load("assets/background/stars.png").convert_alpha()
 
@@ -74,20 +77,32 @@ def gameLoop() -> None:
         for i in range (0, howMany):
             # x coordinate can't always be 0, needs offsetting by width of image, hence imageWidth
             screen.blit(scaledImage, (i * imageWidth + scroll, 0))
-
-        # Blob stuff
+        
+        # Blob stuff #
         blob = pygame.image.load("assets/blob/blob.png")
 
         # Using 331 as that is where the floor starts
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
 
+        # Positioning the blob
         moveSpeed -= 5
-        screen.blit(blob, (width + moveSpeed, heights[0]))
+        blobX = width + moveSpeed
+        blobY = heights[randomHeightIndex]
 
-        # Drawing the floor
+        # Check if blob's off screen
+        if blobX + blob.get_width() < 0:
+            # If it is off screen, reset it's position
+            moveSpeed = 0
+            randomHeightIndex = random.randint(0, 2)
+            blobY = heights[randomHeightIndex]
+
+        # Drawing the blob to the screen
+        screen.blit(blob, (blobX, blobY))
+
+        # Drawing the floor #
         floor()
         
-        # Logic for running animation
+        # Logic for running animation #
         currentTime = pygame.time.get_ticks()
         if currentTime - timer >= interval:
             frameIndex = (frameIndex + 1) % len(frames)
