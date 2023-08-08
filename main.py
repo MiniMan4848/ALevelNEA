@@ -6,6 +6,7 @@ import math
 
 # Initialise pygame
 pygame.init()
+print ("TEST")
 
 # Creating the game window, 32:9 aspect ratio
 screen = pygame.display.set_mode()
