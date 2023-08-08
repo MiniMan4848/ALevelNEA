@@ -143,7 +143,13 @@ def gameLoop() -> None:
             coinFrameIndex = (coinFrameIndex + 1) % len(coinFrames)
             coinTimer = currentCoinTime
 
-        screen.blit(coinFrames[coinFrameIndex], (200, randomHeight))
+        moveCoinSpeed -= 15
+        coinX = width + moveCoinSpeed
+        if coinX + Scaledcoin1.get_width() < 0:
+            moveCoinSpeed = 0
+            randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
+
+        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
 
         # Drawing the floor #
         floor()
