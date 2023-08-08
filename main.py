@@ -26,13 +26,14 @@ fonts = {
 }
             
 def gameLoop() -> None:
-    # Load and store images for running animation
+    # Loading and storing images for running animation
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
     frames = [run1, run2]
 
     # Get time in ms
     timer = pygame.time.get_ticks()
+    coinTimer = pygame.time.get_ticks()
 
     # Interval between frame switches and the frame index
     interval = 100
@@ -47,6 +48,26 @@ def gameLoop() -> None:
 
     # Obstacle speed
     moveObstacleSpeed = 0
+
+    # Coin speed, height, interval and frame index
+    moveCoinSpeed = 0
+    coinInterval = 100
+    coinFrameIndex = 0
+
+    # Loading and storing images for the coin aniamtion
+    coin1 = pygame.image.load("assets/coin/coin1.png").convert_alpha()
+    coin2 = pygame.image.load("assets/coin/coin2.png").convert_alpha()
+    coin3 = pygame.image.load("assets/coin/coin3.png").convert_alpha()
+    coin4 = pygame.image.load("assets/coin/coin4.png").convert_alpha()
+
+    Scaledcoin1 = pygame.transform.scale(coin1, (50, 50))
+    Scaledcoin2 = pygame.transform.scale(coin2, (50, 50))
+    Scaledcoin3 = pygame.transform.scale(coin3, (50, 50))
+    Scaledcoin4 = pygame.transform.scale(coin4, (50, 50))
+
+    randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
+
+    coinFrames = [Scaledcoin1, Scaledcoin2, Scaledcoin3, Scaledcoin4]
 
     # Loop for the game loop
     while True:
@@ -82,7 +103,7 @@ def gameLoop() -> None:
             screen.blit(scaledImage, (i * imageWidth + scroll, 0))
         
         # Blob stuff #
-        blob = pygame.image.load("assets/blob/blob.png")
+        blob = pygame.image.load("assets/blob/blob.png").convert_alpha()
 
         # Using 331 as that is where the floor starts
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
@@ -103,7 +124,7 @@ def gameLoop() -> None:
         screen.blit(blob, (blobX, blobY))
 
         # Obstacle stuff #
-        obstacle1 = pygame.image.load("assets/obstacles/obstacle1.png")
+        obstacle1 = pygame.image.load("assets/obstacles/obstacle1.png").convert_alpha()
         scaledObstale1 = pygame.transform.scale(obstacle1, (45, 60))
 
         moveObstacleSpeed -= 10
@@ -115,6 +136,14 @@ def gameLoop() -> None:
             obstacleY = 331 - scaledObstale1.get_height()
 
         screen.blit(scaledObstale1, (obstacleX, obstacleY))
+
+        # Coin stuff #
+        currentCoinTime = pygame.time.get_ticks()
+        if currentCoinTime - coinTimer >= coinInterval:
+            coinFrameIndex = (coinFrameIndex + 1) % len(coinFrames)
+            coinTimer = currentCoinTime
+
+        screen.blit(coinFrames[coinFrameIndex], (200, randomHeight))
 
         # Drawing the floor #
         floor()
@@ -140,7 +169,7 @@ def mainMenu() -> None:
     settingsflag = False
     helpflag = False
 
-    # Loading and store images for the idle aniamtion
+    # Loading and storing images for the idle aniamtion
     openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
     blink = pygame.image.load("assets/idle/idle2.png").convert_alpha()
     frames = [openEyes, blink]
