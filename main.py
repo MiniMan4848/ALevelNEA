@@ -42,8 +42,11 @@ def gameLoop() -> None:
     scroll = 0
 
     # Blob speed and randomly spawning blob variables
-    moveSpeed = 0
+    moveBlobSpeed = 0
     randomHeightIndex = random.randint(0,2)
+
+    # Obstacle speed
+    moveObstacleSpeed = 0
 
     # Loop for the game loop
     while True:
@@ -85,19 +88,33 @@ def gameLoop() -> None:
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
 
         # Positioning the blob
-        moveSpeed -= 5
-        blobX = width + moveSpeed
+        moveBlobSpeed -= 5
+        blobX = width + moveBlobSpeed
         blobY = heights[randomHeightIndex]
 
         # Check if blob's off screen
         if blobX + blob.get_width() < 0:
             # If it is off screen, reset it's position
-            moveSpeed = 0
+            moveBlobSpeed = 0
             randomHeightIndex = random.randint(0, 2)
             blobY = heights[randomHeightIndex]
 
         # Drawing the blob to the screen
         screen.blit(blob, (blobX, blobY))
+
+        # Obstacle stuff #
+        obstacle1 = pygame.image.load("assets/obstacles/obstacle1.png")
+        scaledObstale1 = pygame.transform.scale(obstacle1, (45, 60))
+
+        moveObstacleSpeed -= 10
+        obstacleX = width + moveObstacleSpeed
+        obstacleY = 331 - scaledObstale1.get_height()
+
+        if obstacleX + scaledObstale1.get_width() < 0:
+            moveObstacleSpeed = 0
+            obstacleY = 331 - scaledObstale1.get_height()
+
+        screen.blit(scaledObstale1, (obstacleX, obstacleY))
 
         # Drawing the floor #
         floor()
