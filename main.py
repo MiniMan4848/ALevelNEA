@@ -66,6 +66,7 @@ def gameLoop() -> None:
     Scaledcoin4 = pygame.transform.scale(coin4, (50, 50))
 
     randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
+    spawnInterval = random.randint(5000, 30000)
 
     coinFrames = [Scaledcoin1, Scaledcoin2, Scaledcoin3, Scaledcoin4]
 
@@ -149,7 +150,9 @@ def gameLoop() -> None:
             moveCoinSpeed = 0
             randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
 
-        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
+        if currentCoinTime == spawnInterval:
+            screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
+            coinTimer = currentCoinTime
 
         # Drawing the floor #
         floor()
