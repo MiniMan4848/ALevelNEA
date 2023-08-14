@@ -3,14 +3,14 @@ from main import *
 
 class Button:
     # Constructor
-    def __init__(self, text:str, y:int, colour:tuple, hovercol:tuple, font:str, paddingx:int, paddingy:int, enabled:bool):
+    def __init__(self, text:str, y:int, colour:tuple, hoverCol:tuple, font:str, paddingX:int, paddingY:int, enabled:bool):
         self.text = text
         self.y = y
         self.colour = colour
-        self.hovercol = hovercol
+        self.hoverCol = hoverCol
         self.font = font
-        self.paddingx = paddingx # Original padding: 25, 10
-        self.paddingy = paddingy
+        self.paddingX = paddingX # Original padding: 25, 10
+        self.paddingY = paddingY
         self.enabled = enabled
 
     def drawButton(self) -> bool:
@@ -18,7 +18,7 @@ class Button:
         buttonText = self.font.render(self.text, True, self.colour)
 
         # x and y coordinate, width and height for button. Fits text.
-        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
+        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
 
         # Calculate x pos to center the button horizontally
         buttonX = (screen.get_width() - buttonRect.width) // 2
@@ -34,42 +34,51 @@ class Button:
         # Hollow button style, border same colour as text
         pygame.draw.rect(screen, self.colour, buttonRect, 2, 0)
 
+        # Drawing the button to the screen
         screen.blit(buttonText, (textx, texty))
 
     def isHovered(self) -> bool:
+        # Getting the mouse position in the form of a tuple
         mx, my = pygame.mouse.get_pos()
 
+        # Drawing the button's text and rectangle
         buttonText = self.font.render(self.text, True, self.colour)
-        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
-        
-        button_x = (screen.get_width() - buttonRect.width) // 2
-        buttonRect.x = button_x
+        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
+        buttonX = (screen.get_width() - buttonRect.width) // 2
+        buttonRect.x = buttonX
 
-        buttonTextHover = self.font.render(self.text, True, self.hovercol)
+        # how the text will look when it's been hovered over
+        buttonTextHover = self.font.render(self.text, True, self.hoverCol)
 
-        textx = button_x + (buttonRect.width - buttonText.get_width()) // 2
+        # Setting the text's x and y position
+        textx = buttonX + (buttonRect.width - buttonText.get_width()) // 2
         texty = self.y + (buttonRect.height - buttonText.get_height()) // 2
 
         # checking if the mouse is over the button/rect
         if buttonRect.collidepoint(mx, my) and self.enabled == True:
-            pygame.draw.rect(screen, self.hovercol, buttonRect, 2, 0)
+            # And if it is, changing the colour of the text and rectangle
+            pygame.draw.rect(screen, self.hoverCol, buttonRect, 2, 0)
             screen.blit(buttonTextHover, (textx, texty))
             return True
         else:
             return False
 
     def isClicked(self) -> bool:
+        # Getting the mouse position in the form of a tuple
         mx, my = pygame.mouse.get_pos()
-        # checking for left click
+
+        # Checking for left click
         leftClick = pygame.mouse.get_pressed()[0]
 
+        # The button's text and rectangle
         buttonText = self.font.render(self.text, True, self.colour)
-        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
+        buttonRect = pygame.rect.Rect((0, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
+        
+        # Button's x values
+        buttonX = (screen.get_width() - buttonRect.width) // 2
+        buttonRect.x = buttonX
 
-
-        button_x = (screen.get_width() - buttonRect.width) // 2
-        buttonRect.x = button_x
-
+        # If the button is clicked, return true
         if leftClick and buttonRect.collidepoint(mx,my) and self.enabled == True:
             return True
         else:
@@ -78,15 +87,15 @@ class Button:
 # Creating almost identical back button class because don't want to center the back button
 class BackButton:
     # Constructor
-    def __init__(self, text:str, x:int, y:int, colour:tuple, hovercol:tuple, font:str, paddingx:int, paddingy:int, enabled:bool):
+    def __init__(self, text:str, x:int, y:int, colour:tuple, hoverCol:tuple, font:str, paddingX:int, paddingY:int, enabled:bool):
         self.text = text
         self.x = x
         self.y = y
         self.colour = colour
-        self.hovercol = hovercol
+        self.hoverCol = hoverCol
         self.font = font
-        self.paddingx = paddingx # Original padding: 25, 10
-        self.paddingy = paddingy
+        self.paddingX = paddingX # Original padding: 25, 10
+        self.paddingY = paddingY
         self.enabled = enabled
 
     def drawButton(self) -> bool:
@@ -94,7 +103,7 @@ class BackButton:
         buttonText = self.font.render(self.text, True, self.colour)
 
         # x and y coordinate, width and height for button. Fits text. +n is padding
-        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
 
         # make text center of the rect
         textx = self.x + (buttonRect.width - buttonText.get_width()) // 2
@@ -110,15 +119,15 @@ class BackButton:
         mx, my = pygame.mouse.get_pos()
 
         buttonText = self.font.render(self.text, True, self.colour)
-        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
-        buttonTextHover = self.font.render(self.text, True, self.hovercol)
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
+        buttonTextHover = self.font.render(self.text, True, self.hoverCol)
 
         textx = self.x + (buttonRect.width - buttonText.get_width()) // 2
         texty = self.y + (buttonRect.height - buttonText.get_height()) // 2
 
         # checking if the mouse is over the button/rect
         if buttonRect.collidepoint(mx, my) and self.enabled == True:
-            pygame.draw.rect(screen, self.hovercol, buttonRect, 2, 0)
+            pygame.draw.rect(screen, self.hoverCol, buttonRect, 2, 0)
             screen.blit(buttonTextHover, (textx, texty))
             return True
         else:
@@ -130,7 +139,7 @@ class BackButton:
         leftClick = pygame.mouse.get_pressed()[0]
 
         buttonText = self.font.render(self.text, True, self.colour)
-        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingx, buttonText.get_height() + self.paddingy))
+        buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
 
         if leftClick and buttonRect.collidepoint(mx,my) and self.enabled == True:
             return True

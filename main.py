@@ -60,15 +60,15 @@ def gameLoop() -> None:
     coin3 = pygame.image.load("assets/coin/coin3.png").convert_alpha()
     coin4 = pygame.image.load("assets/coin/coin4.png").convert_alpha()
 
-    Scaledcoin1 = pygame.transform.scale(coin1, (50, 50))
-    Scaledcoin2 = pygame.transform.scale(coin2, (50, 50))
-    Scaledcoin3 = pygame.transform.scale(coin3, (50, 50))
-    Scaledcoin4 = pygame.transform.scale(coin4, (50, 50))
+    scaledCoin1 = pygame.transform.scale(coin1, (50, 50))
+    scaledCoin2 = pygame.transform.scale(coin2, (50, 50))
+    scaledCoin3 = pygame.transform.scale(coin3, (50, 50))
+    scaledCoin4 = pygame.transform.scale(coin4, (50, 50))
 
-    randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
+    randomHeight = random.randint(0, 331-scaledCoin1.get_height())
     spawnInterval = random.randint(5000, 30000)
 
-    coinFrames = [Scaledcoin1, Scaledcoin2, Scaledcoin3, Scaledcoin4]
+    coinFrames = [scaledCoin1, scaledCoin2, scaledCoin3, scaledCoin4]
 
     # Loop for the game loop
     while True:
@@ -146,13 +146,11 @@ def gameLoop() -> None:
 
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
-        if coinX + Scaledcoin1.get_width() < 0:
+        if coinX + scaledCoin1.get_width() < 0:
             moveCoinSpeed = 0
-            randomHeight = random.randint(0, 331-Scaledcoin1.get_height())
+            randomHeight = random.randint(0, 331 - scaledCoin1.get_height())
 
-        if currentCoinTime == spawnInterval:
-            screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
-            coinTimer = currentCoinTime
+        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
 
         # Drawing the floor #
         floor()
@@ -175,8 +173,8 @@ def mainMenu() -> None:
     from classes.button import Button
 
     # Popup flags
-    settingsflag = False
-    helpflag = False
+    settingsFlag = False
+    helpFlag = False
 
     # Loading and storing images for the idle aniamtion
     openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
@@ -191,25 +189,25 @@ def mainMenu() -> None:
     frameIndex = 0
 
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
-    playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    helpbutton = Button("HELP", 375, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
+    playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    helpButton = Button("HELP", 375, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
     # Loop for the main menu
     while True:
         for event in pygame.event.get():
             # If the mouse button is pressed, go to the game loop
-            if event.type == pygame.MOUSEBUTTONDOWN and playbutton.isClicked():
+            if event.type == pygame.MOUSEBUTTONDOWN and playButton.isClicked():
                 pygame.display.set_caption("Blob Dodge - Game Loop")
                 gameLoop()
 
             # If the settings button is pressed, open the settings window
-            if event.type == pygame.MOUSEBUTTONDOWN and settingsbutton.isClicked():
-                settingsflag = True
+            if event.type == pygame.MOUSEBUTTONDOWN and settingsButton.isClicked():
+                settingsFlag = True
 
             # If the help button is pressed, open the help window
-            if event.type == pygame.MOUSEBUTTONDOWN and helpbutton.isClicked(): 
-                helpflag = True
+            if event.type == pygame.MOUSEBUTTONDOWN and helpButton.isClicked(): 
+                helpFlag = True
 
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -241,23 +239,23 @@ def mainMenu() -> None:
         screen.blit(frames[frameIndex], (400, 331 - frames[frameIndex].get_height()))
 
         # Calling the drawing and hovering methods to the play, help and settings button
-        playbutton.drawButton()
-        playbutton.isHovered()
+        playButton.drawButton()
+        playButton.isHovered()
 
-        settingsbutton.drawButton()
-        settingsbutton.isHovered()
+        settingsButton.drawButton()
+        settingsButton.isHovered()
 
-        helpbutton.drawButton()
-        helpbutton.isHovered()
+        helpButton.drawButton()
+        helpButton.isHovered()
 
         # Puts the main menu text at the top of the screen
-        MMtext = fonts["Header"].render("MAIN MENU", True, ("white"))
-        main_menu_text_rect = MMtext.get_rect(center=(width // 2, height // 12))
-        screen.blit(MMtext, (main_menu_text_rect))
+        mainMenuText = fonts["Header"].render("MAIN MENU", True, ("white"))
+        mainMenuTextRect = mainMenuText.get_rect(center=(width // 2, height // 12))
+        screen.blit(mainMenuText, (mainMenuTextRect))
 
-        highScore(helpbutton)
+        highScore(helpButton)
 
-        if settingsflag == True:
+        if settingsFlag == True:
             from classes.popup import Popup
             # Create an instance of a popup window
             SettingsPopup = Popup()
@@ -265,10 +263,10 @@ def mainMenu() -> None:
             SettingsPopup.backButton()
             
             # Disable the play and settings button when the popup is open
-            playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
 
-        if helpflag == True:
+        if helpFlag == True:
             from classes.popup import Popup
             # Create an instance of a popup window
             HelpPopup = Popup()
@@ -276,14 +274,14 @@ def mainMenu() -> None:
             HelpPopup.backButton()
 
             # Disable the play and settings button when the popup is open
-            playbutton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsbutton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
 
-def highScore(helpbutton) -> None:
+def highScore(helpButton) -> None:
     # Opens and reads the highscore text file
     file = open("highscore.txt", "r")
     fileVal = file.read()
@@ -292,8 +290,8 @@ def highScore(helpbutton) -> None:
     highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (89, 186, 255))
     
     # Get the position to draw the high score above the help button, 360 bc that's
-    helpbuttonCenter = (width // 2, helpbutton.y)
-    highscorePos = (helpbuttonCenter[0] - highScoreText.get_width() // 2, helpbuttonCenter[1] - highScoreText.get_height() - 10)
+    helpButtonCenter = (width // 2, helpButton.y)
+    highscorePos = (helpButtonCenter[0] - highScoreText.get_width() // 2, helpButtonCenter[1] - highScoreText.get_height() - 10)
 
     # Draws the highscore text and value of the file to the screen
     screen.blit(highScoreText, highscorePos)
