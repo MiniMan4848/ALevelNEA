@@ -14,7 +14,6 @@ screen = pygame.display.set_mode((width, height/2))
 
 # Constants
 BGCOL = (32,33,36)
-print ("TEST PUSH")
 
 # Setting the caption on startup
 pygame.display.set_caption("Blob Dodge - Main Menu")
@@ -30,46 +29,35 @@ def gameLoop() -> None:
     # Loading and storing images for running animation
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
-    frames = [run1, run2]
+    runningFrames = [run1, run2]
 
-    # Get time in ms
+    # Getting initial times
     timer = pygame.time.get_ticks()
     coinTimer = pygame.time.get_ticks()
 
-    # Interval between frame switches and the frame index
-    interval = 100
-    frameIndex = 0
-
-    # For the scrolling background
-    scroll = 0
-
-    # Blob speed and randomly spawning blob variables
-    moveBlobSpeed = 0
-    randomHeightIndex = random.randint(0,2)
-
-    # Obstacle speed
-    moveObstacleSpeed = 0
-
-    # Coin speed, height, interval and frame index
-    moveCoinSpeed = 0
+    # Interval's between frame switches and frame indexes
+    runningInterval = 100
+    runningFrameIndex = 0
     coinInterval = 100
     coinFrameIndex = 0
+    randomHeightIndex = random.randint(0,2)
+    
+    # Speed for the scrolling background
+    moveBgSpeed = 0
 
-    # Loading and storing images for the coin aniamtion
-    coin1 = pygame.image.load("assets/coin/coin1.png").convert_alpha()
-    coin2 = pygame.image.load("assets/coin/coin2.png").convert_alpha()
-    coin3 = pygame.image.load("assets/coin/coin3.png").convert_alpha()
-    coin4 = pygame.image.load("assets/coin/coin4.png").convert_alpha()
+    # Moving speeds
+    moveBlobSpeed = 0
+    moveObstacleSpeed = 0
+    moveCoinSpeed = 0
 
-    scaledCoin1 = pygame.transform.scale(coin1, (50, 50))
-    scaledCoin2 = pygame.transform.scale(coin2, (50, 50))
-    scaledCoin3 = pygame.transform.scale(coin3, (50, 50))
-    scaledCoin4 = pygame.transform.scale(coin4, (50, 50))
+    # Loading and scaling the coin frames by first creating an emptly list of the coin framaes
+    coinFrames = []
+    # Load the images using a for loop with values of i from 1 to 4 as the images are named from 1 to 4 and append to the coinFrames list
+    # with the scaling operation
+    for i in range (1, 5):
+        coinFrames.append(pygame.transform.scale(pygame.image.load(f"assets/coin/coin{str(i)}.png").convert_alpha(), (50, 50)))
 
-    randomHeight = random.randint(0, 331-scaledCoin1.get_height())
-    spawnInterval = random.randint(5000, 30000)
-
-    coinFrames = [scaledCoin1, scaledCoin2, scaledCoin3, scaledCoin4]
+    randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
     # Loop for the game loop
     while True:
@@ -93,16 +81,16 @@ def gameLoop() -> None:
         howMany = (math.ceil((int(width)/int(imageWidth)))) + 1
 
         # Scroll background speed
-        scroll -= 10
+        moveBgSpeed -= 10
 
-        # Reset scroll
-        # Checks if image is off screen, scroll is a negative value so use absolute
-        if abs(scroll) > imageWidth:
-            scroll = 0
+        # Reset moveBgSpeed
+        # Checks if image is off screen, moveBgSpeed is a negative value so use absolute
+        if abs(moveBgSpeed) > imageWidth:
+            moveBgSpeed = 0
 
         for i in range (0, howMany):
             # x coordinate can't always be 0, needs offsetting by width of image, hence imageWidth
-            screen.blit(scaledImage, (i * imageWidth + scroll, 0))
+            screen.blit(scaledImage, (i * imageWidth + moveBgSpeed, 0))
         
         # Blob stuff #
         blob = pygame.image.load("assets/blob/blob.png").convert_alpha()
@@ -147,9 +135,9 @@ def gameLoop() -> None:
 
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
-        if coinX + scaledCoin1.get_width() < 0:
+        if coinX + coinFrames[0].get_width() < 0:
             moveCoinSpeed = 0
-            randomHeight = random.randint(0, 331 - scaledCoin1.get_height())
+            randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
         screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
 
@@ -158,12 +146,12 @@ def gameLoop() -> None:
         
         # Logic for running animation #
         currentTime = pygame.time.get_ticks()
-        if currentTime - timer >= interval:
-            frameIndex = (frameIndex + 1) % len(frames)
+        if currentTime - timer >= runningInterval:
+            runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
             timer = currentTime
 
         # Draws the frame to the screen
-        screen.blit(frames[frameIndex], (400, 331 - frames[frameIndex].get_height()))
+        screen.blit(runningFrames[runningFrameIndex], (400, 331 - runningFrames[runningFrameIndex].get_height()))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
@@ -187,7 +175,7 @@ def mainMenu() -> None:
 
     # Interval between blinks in ms
     interval = 0
-    frameIndex = 0
+    blinkingFrameIndex = 0
 
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
     playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
@@ -223,21 +211,21 @@ def mainMenu() -> None:
         currentTime = pygame.time.get_ticks()
 
         # Chekcs if characters eyes are open, and if enough time has passed since last blink, close eyes
-        if frameIndex == 0 and currentTime - timer >= interval:
+        if blinkingFrameIndex == 0 and currentTime - timer >= interval:
             # Switch to the next frame
-            frameIndex = 1
+            blinkingFrameIndex = 1
             # Set the interval for the next blink, 1 to 10 secs
             interval = random.randint(1000, 10000)
             # Update the timer to the current time to calculate time for next blink
             timer = currentTime
 
         # Check if the time since the last update is greater than the interval for blunk eyes, open eyes after 150ms
-        if frameIndex == 1 and currentTime - timer >= 150:
+        if blinkingFrameIndex == 1 and currentTime - timer >= 150:
             # Then switches to the open eyes frame where it loops back to the first if statement
-            frameIndex = 0
+            blinkingFrameIndex = 0
 
         # Draws the frame to the screen
-        screen.blit(frames[frameIndex], (400, 331 - frames[frameIndex].get_height()))
+        screen.blit(frames[blinkingFrameIndex], (400, 331 - frames[blinkingFrameIndex].get_height()))
 
         # Calling the drawing and hovering methods to the play, help and settings button
         playButton.drawButton()
