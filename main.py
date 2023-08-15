@@ -1,8 +1,9 @@
-# Importing modules
+# Importing modules #git push NEA main --force# Forces push.
 import pygame
 import sys
 import random
 import math
+import time
 
 # Initialise pygame
 pygame.init()
@@ -32,7 +33,7 @@ def gameLoop() -> None:
     runningFrames = [run1, run2]
 
     # Getting initial times
-    timer = pygame.time.get_ticks()
+    runningTimer = pygame.time.get_ticks()
     coinTimer = pygame.time.get_ticks()
 
     # Interval's between frame switches and frame indexes
@@ -41,6 +42,7 @@ def gameLoop() -> None:
     coinInterval = 100
     coinFrameIndex = 0
     randomHeightIndex = random.randint(0,2)
+    coinSpawnInterval = random.randint(5, 30)
     
     # Speed for the scrolling background
     moveBgSpeed = 0
@@ -146,9 +148,9 @@ def gameLoop() -> None:
         
         # Logic for running animation #
         currentTime = pygame.time.get_ticks()
-        if currentTime - timer >= runningInterval:
+        if currentTime - runningTimer >= runningInterval:
             runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
-            timer = currentTime
+            runningTimer = currentTime
 
         # Draws the frame to the screen
         screen.blit(runningFrames[runningFrameIndex], (400, 331 - runningFrames[runningFrameIndex].get_height()))
@@ -278,7 +280,7 @@ def highScore(helpButton) -> None:
     # Gets the highscore text and the value of the file
     highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (89, 186, 255))
     
-    # Get the position to draw the high score above the help button, 360 bc that's
+    # Get the position to draw the high score above the help button
     helpButtonCenter = (width // 2, helpButton.y)
     highscorePos = (helpButtonCenter[0] - highScoreText.get_width() // 2, helpButtonCenter[1] - highScoreText.get_height() - 10)
 
