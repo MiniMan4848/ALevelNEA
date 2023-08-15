@@ -14,6 +14,7 @@ screen = pygame.display.set_mode((width, height/2))
 
 # Constants
 BGCOL = (32,33,36)
+print ("TEST PUSH")
 
 # Setting the caption on startup
 pygame.display.set_caption("Blob Dodge - Main Menu")
