@@ -32,11 +32,16 @@ def gameLoop() -> None:
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
     runningFrames = [run1, run2]
 
+    # Loading blob image
+    blob = pygame.image.load("assets/blob/blob.png").convert_alpha()
+
     # Getting initial times
     runningTimer = time.time()
 
     coinTimerForAnimation = time.time()
     coinTimerForSpawning = time.time()
+
+    blobTimerForSpawning = time.time()
 
     # Interval's between frame switches and frame indexes
     runningInterval = 0.1
@@ -44,7 +49,8 @@ def gameLoop() -> None:
     coinInterval = 0.1
     coinFrameIndex = 0
     randomHeightIndex = random.randint(0,2)
-    coinSpawnInterval = random.randint(5, 30)
+    coinSpawnInterval = random.randint(5, 25)
+    blobSpawnInterval = random.randint(5, 30)
     
     # Speed for the scrolling background
     moveBgSpeed = 0
@@ -97,22 +103,35 @@ def gameLoop() -> None:
             screen.blit(scaledImage, (i * imageWidth + moveBgSpeed, 0))
         
         # Blob stuff #
-        blob = pygame.image.load("assets/blob/blob.png").convert_alpha()
+        currentBlobSpawning = time.time()
+        timeElapsedForSpawningBlob = currentBlobSpawning - blobTimerForSpawning
 
-        # Using 331 as that is where the floor starts
+        print (str(timeElapsedForSpawningBlob))
+        print (str(blobSpawnInterval))
+
+        # Moving the blob
+        moveBlobSpeed -= 5
+
+        # Storing the height's that a blob can spawn at
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
 
         # Positioning the blob
-        moveBlobSpeed -= 5
         blobX = width + moveBlobSpeed
         blobY = heights[randomHeightIndex]
+        
+        # Spawns a blob
+        if timeElapsedForSpawningBlob >= blobSpawnInterval and blobX + blob.get_width() < 0:
 
-        # Check if blob's off screen
-        if blobX + blob.get_width() < 0:
-            # If it is off screen, reset it's position
+            # Puts the blob at the beginning and chooses new random height
             moveBlobSpeed = 0
             randomHeightIndex = random.randint(0, 2)
             blobY = heights[randomHeightIndex]
+
+            # Create's a new spawn interval
+            blobSpawnInterval = random.randint(5, 30)
+
+            # Resets the timer
+            blobTimerForSpawning = currentBlobSpawning
 
         # Drawing the blob to the screen
         screen.blit(blob, (blobX, blobY))
@@ -137,9 +156,6 @@ def gameLoop() -> None:
 
         TimeElapsedForAnimation = currentCoinTimeForAnimation - coinTimerForAnimation
         timeElapsedForSpawning = currentCoinTimeForSpawning - coinTimerForSpawning
-
-        print (str(coinSpawnInterval))
-        print (str(timeElapsedForSpawning))
         
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
@@ -149,15 +165,15 @@ def gameLoop() -> None:
             coinFrameIndex = (coinFrameIndex + 1) % (len(coinFrames))
             coinTimerForAnimation = currentCoinTimeForAnimation
 
-        # For the coin's spawning behaviour
+        # For the coin's spawning behaviour/spawns a coin
         if timeElapsedForSpawning >= coinSpawnInterval:
-            
-            # Put the coin at the beginning and make a random height
+    
+            # Puts the coin at the beginning and makes a random height
             moveCoinSpeed = 0
             randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
             # Create a new spawn interval
-            coinSpawnInterval = random.randint(5, 30)
+            coinSpawnInterval = random.randint(5, 25)
 
             # Reset the timer
             coinTimerForSpawning = currentCoinTimeForSpawning
