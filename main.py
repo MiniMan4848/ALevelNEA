@@ -138,27 +138,32 @@ def gameLoop() -> None:
         TimeElapsedForAnimation = currentCoinTimeForAnimation - coinTimerForAnimation
         timeElapsedForSpawning = currentCoinTimeForSpawning - coinTimerForSpawning
 
-        moveCoinSpeed -= 15
-        coinX = width + moveCoinSpeed
-
         print (str(coinSpawnInterval))
         print (str(timeElapsedForSpawning))
+        
+        moveCoinSpeed -= 15
+        coinX = width + moveCoinSpeed
 
         # For the coin's animation
         if TimeElapsedForAnimation >= coinInterval:
             coinFrameIndex = (coinFrameIndex + 1) % (len(coinFrames))
             coinTimerForAnimation = currentCoinTimeForAnimation
 
-        # To spawn the coin back on screen when it's gone off screen
-        if coinX + coinFrames[0].get_width() < 0:
+        # For the coin's spawning behaviour
+        if timeElapsedForSpawning >= coinSpawnInterval:
+            
+            # Put the coin at the beginning and make a random height
             moveCoinSpeed = 0
             randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
-        # For the coin's spawning behaviour
-        if timeElapsedForSpawning >= coinSpawnInterval:
-            print ("COIN INTERVAL REACHED, RESETTING TIMER")
+            # Create a new spawn interval
             coinSpawnInterval = random.randint(5, 30)
+
+            # Reset the timer
             coinTimerForSpawning = currentCoinTimeForSpawning
+
+        # Draw the coin
+        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
 
         # Drawing the floor #
         floor()
