@@ -33,13 +33,15 @@ def gameLoop() -> None:
     runningFrames = [run1, run2]
 
     # Getting initial times
-    runningTimer = pygame.time.get_ticks()
-    coinTimer = pygame.time.get_ticks()
+    runningTimer = time.time()
+
+    coinTimerForAnimation = time.time()
+    coinTimerForSpawning = time.time()
 
     # Interval's between frame switches and frame indexes
-    runningInterval = 100
+    runningInterval = 0.1
     runningFrameIndex = 0
-    coinInterval = 100
+    coinInterval = 0.1
     coinFrameIndex = 0
     randomHeightIndex = random.randint(0,2)
     coinSpawnInterval = random.randint(5, 30)
@@ -130,24 +132,39 @@ def gameLoop() -> None:
         screen.blit(scaledObstale1, (obstacleX, obstacleY))
 
         # Coin stuff #
-        currentCoinTime = pygame.time.get_ticks()
-        if currentCoinTime - coinTimer >= coinInterval:
-            coinFrameIndex = (coinFrameIndex + 1) % len(coinFrames)
-            coinTimer = currentCoinTime
+        currentCoinTimeForAnimation = time.time()
+        currentCoinTimeForSpawning = time.time()
+
+        TimeElapsedForAnimation = currentCoinTimeForAnimation - coinTimerForAnimation
+        timeElapsedForSpawning = currentCoinTimeForSpawning - coinTimerForSpawning
 
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
+
+        print (str(coinSpawnInterval))
+        print (str(timeElapsedForSpawning))
+
+        # For the coin's animation
+        if TimeElapsedForAnimation >= coinInterval:
+            coinFrameIndex = (coinFrameIndex + 1) % (len(coinFrames))
+            coinTimerForAnimation = currentCoinTimeForAnimation
+
+        # To spawn the coin back on screen when it's gone off screen
         if coinX + coinFrames[0].get_width() < 0:
             moveCoinSpeed = 0
             randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
-        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
+        # For the coin's spawning behaviour
+        if timeElapsedForSpawning >= coinSpawnInterval:
+            print ("COIN INTERVAL REACHED, RESETTING TIMER")
+            coinSpawnInterval = random.randint(5, 30)
+            coinTimerForSpawning = currentCoinTimeForSpawning
 
         # Drawing the floor #
         floor()
         
         # Logic for running animation #
-        currentTime = pygame.time.get_ticks()
+        currentTime = time.time()
         if currentTime - runningTimer >= runningInterval:
             runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
             runningTimer = currentTime
@@ -173,7 +190,7 @@ def mainMenu() -> None:
     frames = [openEyes, blink]
 
     # Get time in ms
-    timer = pygame.time.get_ticks()
+    timer = time.time()
 
     # Interval between blinks in ms
     interval = 0
@@ -210,19 +227,19 @@ def mainMenu() -> None:
         
         # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
         # Gets the current time in ms
-        currentTime = pygame.time.get_ticks()
+        currentTime = time.time()
 
         # Chekcs if characters eyes are open, and if enough time has passed since last blink, close eyes
         if blinkingFrameIndex == 0 and currentTime - timer >= interval:
             # Switch to the next frame
             blinkingFrameIndex = 1
             # Set the interval for the next blink, 1 to 10 secs
-            interval = random.randint(1000, 10000)
+            interval = random.randint(1, 10)
             # Update the timer to the current time to calculate time for next blink
             timer = currentTime
 
-        # Check if the time since the last update is greater than the interval for blunk eyes, open eyes after 150ms
-        if blinkingFrameIndex == 1 and currentTime - timer >= 150:
+        # Check if the time since the last update is greater than the interval for blunk eyes, open eyes after 0.15s
+        if blinkingFrameIndex == 1 and currentTime - timer >= 0.15:
             # Then switches to the open eyes frame where it loops back to the first if statement
             blinkingFrameIndex = 0
 
