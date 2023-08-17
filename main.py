@@ -54,6 +54,7 @@ def gameLoop() -> None:
     coinFrameIndex = 0
 
     randomHeightIndex = random.randint(0,2)
+    randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
     coinSpawnInterval = random.randint(5, 15)
     blobSpawnInterval = random.randint(5, 20)
@@ -69,12 +70,11 @@ def gameLoop() -> None:
 
     # Loading and scaling the coin frames by first creating an emptly list of the coin framaes
     coinFrames = []
+    
     # Load the images using a for loop with values of i from 1 to 4 as the images are named from 1 to 4 and append to the coinFrames list
     # with the scaling operation
     for i in range (1, 5):
         coinFrames.append(pygame.transform.scale(pygame.image.load(f"assets/coin/coin{str(i)}.png").convert_alpha(), (50, 50)))
-
-    randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
     # Loop for the game loop
     while True:
@@ -173,6 +173,7 @@ def gameLoop() -> None:
         TimeElapsedForAnimation = currentCoinTimeForAnimation - coinTimerForAnimation
         timeElapsedForSpawning = currentCoinTimeForSpawning - coinTimerForSpawning
         
+        # Moving and positioning the coin
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
 
