@@ -32,8 +32,9 @@ def gameLoop() -> None:
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
     runningFrames = [run1, run2]
 
-    # Loading blob image
+    # Loading blob and obstacle images
     blob = pygame.image.load("assets/blob/blob.png").convert_alpha()
+    obstacle1 = pygame.image.load("assets/obstacles/obstacle1.png").convert_alpha()
 
     # Getting initial times
     runningTimer = time.time()
@@ -43,14 +44,20 @@ def gameLoop() -> None:
 
     blobTimerForSpawning = time.time()
 
+    obstacleTimerForSpawning = time.time()
+
     # Interval's between frame switches and frame indexes
     runningInterval = 0.1
     runningFrameIndex = 0
+
     coinInterval = 0.1
     coinFrameIndex = 0
+
     randomHeightIndex = random.randint(0,2)
-    coinSpawnInterval = random.randint(5, 25)
-    blobSpawnInterval = random.randint(5, 30)
+
+    coinSpawnInterval = random.randint(5, 15)
+    blobSpawnInterval = random.randint(5, 20)
+    obstacleSpawnInterval = random.randint(2, 10)
     
     # Speed for the scrolling background
     moveBgSpeed = 0
@@ -106,9 +113,6 @@ def gameLoop() -> None:
         currentBlobSpawning = time.time()
         timeElapsedForSpawningBlob = currentBlobSpawning - blobTimerForSpawning
 
-        print (str(timeElapsedForSpawningBlob))
-        print (str(blobSpawnInterval))
-
         # Moving the blob
         moveBlobSpeed -= 5
 
@@ -128,7 +132,7 @@ def gameLoop() -> None:
             blobY = heights[randomHeightIndex]
 
             # Create's a new spawn interval
-            blobSpawnInterval = random.randint(5, 30)
+            blobSpawnInterval = random.randint(5, 20)
 
             # Resets the timer
             blobTimerForSpawning = currentBlobSpawning
@@ -137,16 +141,28 @@ def gameLoop() -> None:
         screen.blit(blob, (blobX, blobY))
 
         # Obstacle stuff #
-        obstacle1 = pygame.image.load("assets/obstacles/obstacle1.png").convert_alpha()
+        currentObstacleSpawning = time.time()
+        timeElapsedForSpawningObstacle = currentObstacleSpawning - obstacleTimerForSpawning
+
         scaledObstale1 = pygame.transform.scale(obstacle1, (45, 60))
 
-        moveObstacleSpeed -= 10
+        # Moving the obstacle
+        moveObstacleSpeed -= 11
+
+        # Positioning the obstacle
         obstacleX = width + moveObstacleSpeed
         obstacleY = 331 - scaledObstale1.get_height()
 
-        if obstacleX + scaledObstale1.get_width() < 0:
+        # Spawns a obstacle
+        if timeElapsedForSpawningObstacle >= obstacleSpawnInterval and obstacleX + scaledObstale1.get_width() < 0:
+
+            # Puts obstacle at the beginning and chooses new random spawn interval
             moveObstacleSpeed = 0
             obstacleY = 331 - scaledObstale1.get_height()
+            obstacleSpawnInterval = random.randint(2, 10)
+
+            # Reset the timer
+            obstacleTimerForSpawning = currentObstacleSpawning
 
         screen.blit(scaledObstale1, (obstacleX, obstacleY))
 
@@ -173,7 +189,7 @@ def gameLoop() -> None:
             randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
             # Create a new spawn interval
-            coinSpawnInterval = random.randint(5, 25)
+            coinSpawnInterval = random.randint(5, 15)
 
             # Reset the timer
             coinTimerForSpawning = currentCoinTimeForSpawning
@@ -218,8 +234,8 @@ def mainMenu() -> None:
     blinkingFrameIndex = 0
 
     # All instances of main menu buttons, x pos is None because automatically centered on that axis
-    playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
-    settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, True)
+    playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, True)
+    settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, True)
     helpButton = Button("HELP", 375, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
     # Loop for the main menu
@@ -292,8 +308,8 @@ def mainMenu() -> None:
             SettingsPopup.backButton()
             
             # Disable the play and settings button when the popup is open
-            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
+            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
 
         if helpFlag == True:
             from classes.popup import Popup
@@ -303,8 +319,8 @@ def mainMenu() -> None:
             HelpPopup.backButton()
 
             # Disable the play and settings button when the popup is open
-            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
-            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 25, 10, False)
+            playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
+            settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
