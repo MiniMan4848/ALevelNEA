@@ -66,10 +66,13 @@ def gameLoop() -> None:
     moveBlobSpeed = 0
     moveObstacleSpeed = 0
     moveCoinSpeed = 0
-
+    
     # Loading and scaling the coin frames by first creating an emptly list of the coin framaes
     coinFrames = []
     
+    # Control flags
+    arrowKeyControls = True
+
     # Load the images using a for loop with values of i from 1 to 4 as the images are named from 1 to 4 and append to the coinFrames list
     # with the scaling operation
     for i in range (1, 5):
@@ -83,6 +86,10 @@ def gameLoop() -> None:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+            # Logic for jumping #
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP and arrowKeyControls == True:
+                jump()
 
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
@@ -214,6 +221,9 @@ def gameLoop() -> None:
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
+
+def jump():
+    print ("KEY PRESSED IN FUNCTION")
 
 def mainMenu() -> None:
     # importing classes used in the main menu to avoid a circular import error
