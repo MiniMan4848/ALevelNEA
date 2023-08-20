@@ -25,8 +25,12 @@ fonts = {
     "Smaller":pygame.font.Font("assets/fonts/Gotham Black.ttf", 50),
     "Tiny":pygame.font.Font("assets/fonts/Gotham Black.ttf", 20)
 }
+
+# Global variables for the jumping function and character's position
+
             
 def gameLoop() -> None:
+
     # Loading and storing images for running animation
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
@@ -79,7 +83,13 @@ def gameLoop() -> None:
         coinFrames.append(pygame.transform.scale(pygame.image.load(f"assets/coin/coin{str(i)}.png").convert_alpha(), (50, 50)))
 
     randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
-
+    
+    # Variables used for jumping
+    characterX = 400
+    characterY = 331 - run2.get_height()
+    jumping = False
+    jumpCount = 10
+    
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -87,9 +97,20 @@ def gameLoop() -> None:
                 pygame.quit()
                 sys.exit()
 
-            # Logic for jumping #
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP and arrowKeyControls == True:
-                jump()
+        # Logic for jumping #
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_UP] and arrowKeyControls == True:
+            jumping = True
+            if jumpCount >= -10:
+                neg = 1
+                if jumpCount < 0: # a negative number
+                    neg = -1
+                characterY -= (jumpCount ** 2) * 0.5 * neg
+                jumpCount -= 1
+            else:
+                jumping = False
+                jumpCount = 10
 
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
@@ -216,14 +237,11 @@ def gameLoop() -> None:
             runningTimer = currentTime
 
         # Draws the frame to the screen
-        screen.blit(runningFrames[runningFrameIndex], (400, 331 - runningFrames[runningFrameIndex].get_height()))
+        screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
-
-def jump():
-    print ("KEY PRESSED IN FUNCTION")
 
 def mainMenu() -> None:
     # importing classes used in the main menu to avoid a circular import error
