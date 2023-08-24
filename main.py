@@ -66,7 +66,7 @@ def gameLoop() -> None:
     # Speed for the scrolling background
     moveBgSpeed = 0
 
-    # Moving speeds
+    # Initial moving speeds
     moveBlobSpeed = 0
     moveObstacleSpeed = 0
     moveCoinSpeed = 0
@@ -87,7 +87,7 @@ def gameLoop() -> None:
     # Variables used for jumping
     characterX = 400
     characterY = 331 - run2.get_height()
-    jumping = False
+
     jumpCount = 10
     
     # Loop for the game loop
@@ -101,13 +101,25 @@ def gameLoop() -> None:
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] and arrowKeyControls == True:
-            jumping = True
+
+            # Initially true
             if jumpCount >= -10:
+                # Does not move the chatacter as multiplying by 1
                 neg = 1
-                if jumpCount < 0: # a negative number
+
+                # If jumpCount is a negative number which occurs on 'jumpCount -=1'
+                if jumpCount < 0: 
                     neg = -1
+
+                # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
+                # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
+                # represents c in the quadratic formula which is the y intercept
                 characterY -= (jumpCount ** 2) * 0.5 * neg
+
+                # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
                 jumpCount -= 1
+
+            # Jump has finished, resets jumping and jumpCount variables
             else:
                 jumping = False
                 jumpCount = 10
@@ -143,7 +155,7 @@ def gameLoop() -> None:
         timeElapsedForSpawningBlob = currentBlobSpawning - blobTimerForSpawning
 
         # Moving the blob
-        moveBlobSpeed -= 5
+        moveBlobSpeed -= 25
 
         # Storing the height's that a blob can spawn at
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
