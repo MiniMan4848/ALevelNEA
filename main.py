@@ -101,7 +101,9 @@ def gameLoop() -> None:
         # Logic for jumping #
         keys = pygame.key.get_pressed()
 
+        # Checking if the character is not already jumping
         if not (jumping):
+            # Check for input and start jumping process if there is input
             if keys[pygame.K_UP] and arrowKeyControls == True:
                 jumping = True
         else:
@@ -109,7 +111,7 @@ def gameLoop() -> None:
                 # Does not move the chatacter as multiplying by 1
                 neg = 1
 
-                # If jumpCount is a negative number which occurs on 'jumpCount -=1'
+                # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
                 if jumpCount < 0:
                     neg = -1
 
