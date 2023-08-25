@@ -87,7 +87,6 @@ def gameLoop() -> None:
     # Variables used for jumping
     characterX = 400
     characterY = 331 - run2.get_height()
-    vel = 5
     jumpCount = 10
     jumping = False
 
@@ -120,14 +119,18 @@ def gameLoop() -> None:
                 # represents c in the quadratic formula which is the y intercept
                 characterY -= (jumpCount **2) * 0.5 * neg
 
+                # Freezing the character
+                runningFrames = [run1, run1]
+
                 # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
                 jumpCount -= 1
             else:
-                # Jump has finished, resets jumping and jumpCount
+                # Jump has finished, resets jumping and jumpCount and starts the running animation again
                 jumping = False
                 jumpCount = 10
+                runningFrames = [run1, run2]
 
-        # Fills the screen grey and makes the floor
+        # Fills the screen grey
         screen.fill(BGCOL)
 
         # Background stuff #
