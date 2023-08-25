@@ -87,9 +87,10 @@ def gameLoop() -> None:
     # Variables used for jumping
     characterX = 400
     characterY = 331 - run2.get_height()
-
+    vel = 5
     jumpCount = 10
-    
+    jumping = False
+
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -100,27 +101,27 @@ def gameLoop() -> None:
         # Logic for jumping #
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP] and arrowKeyControls == True:
-
-            # Initially true
-            if jumpCount >= -10:
+        if not (jumping):
+            if keys[pygame.K_UP] and arrowKeyControls == True:
+                jumping = True
+        else:
+            if jumpCount >= - 10:
                 # Does not move the chatacter as multiplying by 1
                 neg = 1
 
                 # If jumpCount is a negative number which occurs on 'jumpCount -=1'
-                if jumpCount < 0: 
+                if jumpCount < 0:
                     neg = -1
 
                 # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
                 # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
                 # represents c in the quadratic formula which is the y intercept
-                characterY -= (jumpCount ** 2) * 0.5 * neg
+                characterY -= (jumpCount **2) * 0.5 * neg
 
                 # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
                 jumpCount -= 1
-
-            # Jump has finished, resets jumping and jumpCount variables
             else:
+                # Jump has finished, resets jumping and jumpCount
                 jumping = False
                 jumpCount = 10
 
