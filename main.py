@@ -101,6 +101,15 @@ def gameLoop() -> None:
 
         # Logic for jumping #
         keys = pygame.key.get_pressed()
+        
+        # Logic for crouching #
+        # Check for down arrow key input 
+        if keys[pygame.K_DOWN] and arrowKeyControls == True:
+            # If there is down arrow key input, switch to the crouching frames
+            runningFrames = [crouchedRun1, crouchedRun2]
+        # If not, use the normal running frames
+        else:
+            runningFrames = [run1, run2]
 
         # Checking if the character is not already jumping
         if not (jumping):
@@ -131,15 +140,6 @@ def gameLoop() -> None:
                 jumping = False
                 jumpCount = 10
                 runningFrames = [run1, run2]
-        
-        # Logic for crouching #
-        # Check for down arrow key input 
-        if keys[pygame.K_DOWN] and arrowKeyControls == True:
-            # If there is down arrow key input, switch to the crouching frames
-            runningFrames = [crouchedRun1, crouchedRun2]
-        # If not, use the normal running frames
-        else:
-            runningFrames = [run1, run2]
 
         # Fills the screen grey
         screen.fill(BGCOL)
