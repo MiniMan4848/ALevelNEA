@@ -31,9 +31,13 @@ fonts = {
             
 def gameLoop() -> None:
 
-    # Loading and storing images for running animation
+    # Loading and storing images for running and crouching animation
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
+
+    crouchedRun1 = pygame.image.load("assets/run/crouchedRun1.png").convert_alpha()
+    crouchedRun2 = pygame.image.load("assets/run/crouchedRun2.png").convert_alpha()
+
     runningFrames = [run1, run2]
 
     # Loading blob and obstacle images
@@ -129,6 +133,15 @@ def gameLoop() -> None:
                 jumping = False
                 jumpCount = 10
                 runningFrames = [run1, run2]
+        
+        # Logic for crouching #
+        # Check for down arrow key input 
+        if keys[pygame.K_DOWN] and arrowKeyControls == True:
+            # If there is down arrow key input, switch to the crouching frames
+            runningFrames = [crouchedRun1, crouchedRun2]
+        # If not, use the normal running frames
+        else:
+            runningFrames = [run1, run2]
 
         # Fills the screen grey
         screen.fill(BGCOL)
