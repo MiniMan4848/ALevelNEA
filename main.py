@@ -26,8 +26,9 @@ fonts = {
     "Tiny":pygame.font.Font("assets/fonts/Gotham Black.ttf", 20)
 }
 
-# Global variables for the jumping function and character's position
-
+# Variables used in the game loop and main menu
+arrowKeyControls = True
+handGestureControls = False
             
 def gameLoop() -> None:
 
@@ -77,9 +78,6 @@ def gameLoop() -> None:
     
     # Loading and scaling the coin frames by first creating an emptly list of the coin framaes
     coinFrames = []
-    
-    # Control flags
-    arrowKeyControls = True
 
     # Load the images using a for loop with values of i from 1 to 4 as the images are named from 1 to 4 and append to the coinFrames list
     # with the scaling operation
