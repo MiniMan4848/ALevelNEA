@@ -23,6 +23,7 @@ pygame.display.set_caption("Blob Dodge - Main Menu")
 fonts = {
     "Header":pygame.font.Font("assets/fonts/Gotham Black.ttf", 100),
     "Smaller":pygame.font.Font("assets/fonts/Gotham Black.ttf", 50),
+    "Medium":pygame.font.Font("assets/fonts/Gotham Black.ttf", 35),
     "Tiny":pygame.font.Font("assets/fonts/Gotham Black.ttf", 20)
 }
 
@@ -101,7 +102,7 @@ def gameLoop() -> None:
 
         # Logic for jumping #
         keys = pygame.key.get_pressed()
-        
+
         # Logic for crouching #
         # Check for down arrow key input 
         if keys[pygame.K_DOWN] and arrowKeyControls == True:
@@ -361,14 +362,25 @@ def mainMenu() -> None:
 
         if settingsFlag == True:
             from classes.popup import Popup
+            from classes.button import BackButton
             # Create an instance of a popup window
             SettingsPopup = Popup()
             SettingsPopup.drawPopup()
             SettingsPopup.backButton()
-            
+
             # Disable the play and settings button when the popup is open
             playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
             settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
+
+            # Instantiating buttons for the character controls
+            hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (255, 255, 255), fonts["Medium"], 10, 10, True)
+            arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (255, 255, 255), fonts["Medium"], 10, 10, True)
+
+            # Calling methods to draw the buttons
+            hands.drawButton()
+            hands.isHovered()
+            arrows.drawButton()
+            arrows.isHovered()
 
         if helpFlag == True:
             from classes.popup import Popup
