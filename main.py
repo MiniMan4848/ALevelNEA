@@ -376,7 +376,11 @@ def mainMenu() -> None:
             playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
             settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
 
-            # Instantiating buttons for the character controls
+            # Instantiating buttons for the character controls and creating the text
+            chooseControlsText = fonts["Tiny"].render("CHOOSE CONTROLS", True, (85, 85, 85))
+            chooseControlsTextRect = chooseControlsText.get_rect(center=(width//2, height//3))
+            screen.blit(chooseControlsText, (chooseControlsTextRect))
+
             hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
             arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
 
