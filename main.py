@@ -281,6 +281,10 @@ def mainMenu() -> None:
     settingsFlag = False
     helpFlag = False
 
+    # Making the variables globally accessible
+    global arrowKeyControls
+    global handGestureControls
+
     # Loading and storing images for the idle aniamtion
     openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
     blink = pygame.image.load("assets/idle/idle2.png").convert_alpha()
@@ -373,10 +377,30 @@ def mainMenu() -> None:
             settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
 
             # Instantiating buttons for the character controls
-            hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (255, 255, 255), fonts["Medium"], 10, 10, True)
-            arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (255, 255, 255), fonts["Medium"], 10, 10, True)
+            hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
+            arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
 
-            # Calling methods to draw the buttons
+            # If the arrow key option is selected, make the arrow key flag true and the hand gesture flag false
+            if arrows.isClicked():
+                arrowKeyControls = True
+                handGestureControls = False
+
+            # If the hand gesture option is selected, make the hand gesture flag true and the arrow key flag false
+            if hands.isClicked():
+                handGestureControls = True
+                arrowKeyControls = False
+
+            # Carries on from the first if statement, this changes the colour of the 'arrows' button
+            if arrowKeyControls == True and handGestureControls == False:
+                arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (42, 189, 81), (30, 212, 78), fonts["Medium"], 10, 10, True)
+                hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
+
+            # Carries on from the second if statement, this changes the colour of the 'hands' button
+            if handGestureControls == True and arrowKeyControls == False:
+                arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
+                hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (42, 189, 81), (30, 212, 78), fonts["Medium"], 10, 10, True)
+
+            # Calling methods to draw buttons
             hands.drawButton()
             hands.isHovered()
             arrows.drawButton()
