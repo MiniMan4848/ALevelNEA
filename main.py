@@ -93,6 +93,10 @@ def gameLoop() -> None:
     jumpCount = 10
     jumping = False
 
+    # Variables for scoring
+    score = 0
+    scoringTimer = time.time()
+
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -268,6 +272,12 @@ def gameLoop() -> None:
 
         # Draws the frame to the screen
         screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+
+        # Scoring stuff #
+        currentScoringTimer = time.time()
+        timeElapsedForScoring = currentScoringTimer - scoringTimer
+        score = timeElapsedForScoring * 10
+        print (math.ceil(int(score)))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
