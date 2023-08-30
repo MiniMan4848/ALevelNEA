@@ -274,15 +274,28 @@ def gameLoop() -> None:
         screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
 
         # Scoring stuff #
+
+        # Generating and drawing the current score
         currentScoringTimer = time.time()
         timeElapsedForScoring = currentScoringTimer - scoringTimer
         score = math.ceil(timeElapsedForScoring * 10)
 
-        scoreText = fonts["Medium"].render(str(score), True, ("green"))
+        scoreText = fonts["Medium"].render(str(score), True, (68, 230, 50))
         # Got x and y by getting a pixel value i like then dividing it by the width/height(/2).
         # On my screen width is 1440 and height/2 is 410, want height at 20 so do 1440/20 which
         # is 72 and so width/72 == 20. Same principle for the height.
         screen.blit(scoreText, (width/72, ((height/2)/10)))
+
+        # Drawing the highscore
+        # Opens and reads the highscore text file
+        file = open("highscore.txt", "r")
+        fileVal = file.read()
+
+        # Gets the highscore text and the value of the file
+        highScoreText = fonts["Medium"].render(f"HI: {fileVal}", True, (68, 230, 50))
+
+        # drawing to screen
+        screen.blit(highScoreText, (width/72, ((height/2)/10) - 40))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
@@ -450,10 +463,10 @@ def highScore(helpButton) -> None:
     
     # Get the position to draw the high score above the help button
     helpButtonCenter = (width // 2, helpButton.y)
-    highscorePos = (helpButtonCenter[0] - highScoreText.get_width() // 2, helpButtonCenter[1] - highScoreText.get_height() - 10)
+    highScorePos = (helpButtonCenter[0] - highScoreText.get_width() // 2, helpButtonCenter[1] - highScoreText.get_height() - 10)
 
     # Draws the highscore text and value of the file to the screen
-    screen.blit(highScoreText, highscorePos)
+    screen.blit(highScoreText, highScorePos)
 
     # Closes the file once the operation has been completed
     file.close()
