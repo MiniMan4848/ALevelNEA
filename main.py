@@ -276,8 +276,13 @@ def gameLoop() -> None:
         # Scoring stuff #
         currentScoringTimer = time.time()
         timeElapsedForScoring = currentScoringTimer - scoringTimer
-        score = timeElapsedForScoring * 10
-        print (math.ceil(int(score)))
+        score = math.ceil(timeElapsedForScoring * 10)
+
+        scoreText = fonts["Medium"].render(str(score), True, ("green"))
+        # Got x and y by getting a pixel value i like then dividing it by the width/height(/2).
+        # On my screen width is 1440 and height/2 is 410, want height at 20 so do 1440/20 which
+        # is 72 and so width/72 == 20. Same principle for the height.
+        screen.blit(scoreText, (width/72, ((height/2)/10)))
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
