@@ -270,8 +270,17 @@ def gameLoop() -> None:
             runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
             runningTimer = currentTime
 
-        # Draws the frame to the screen
-        screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+        # Draws the running frame to the screen
+        if runningFrames == [run1, run2]:
+            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+
+        # Moves the character down by 13px if crouched
+        elif runningFrames == [crouchedRun1, crouchedRun2]:
+            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY+13))
+
+        # This else statement is for when the player is not running or crouching e.g, jumping
+        else:
+            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
 
         # Scoring stuff #
 
