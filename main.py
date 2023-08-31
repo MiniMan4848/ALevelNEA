@@ -303,6 +303,11 @@ def gameLoop() -> None:
         # Gets the highscore text and the value of the file
         highScoreText = fonts["Medium"].render(f"HI: {fileVal}", True, (68, 230, 50))
 
+        # Highscore aspect of the scoring system
+        if score > int(fileVal):
+            file = open("highscore.txt", "w")
+            file.write(str(score))
+
         # drawing to screen
         screen.blit(highScoreText, (width/72, ((height/2)/10) - 40))
 
