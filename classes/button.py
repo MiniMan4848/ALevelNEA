@@ -133,7 +133,7 @@ class BackButton:
         else:
             return False
 
-    def isClicked(self) -> bool:
+    def isClicked(self) -> str:
         mx, my = pygame.mouse.get_pos()
         # checking for left click
         leftClick = pygame.mouse.get_pressed()[0]
@@ -142,6 +142,6 @@ class BackButton:
         buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
 
         if leftClick and buttonRect.collidepoint(mx,my) and self.enabled == True:
-            return True
+            return self.text
         else:
-            return False
+            return ""
