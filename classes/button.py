@@ -142,6 +142,6 @@ class BackButton:
         buttonRect = pygame.rect.Rect((self.x, self.y), (buttonText.get_width() + self.paddingX, buttonText.get_height() + self.paddingY))
 
         if leftClick and buttonRect.collidepoint(mx,my) and self.enabled == True:
-            return self.text
+            return True
         else:
-            return ""
+            return False

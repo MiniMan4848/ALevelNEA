@@ -180,7 +180,7 @@ def gameLoop() -> None:
         moveBlobSpeed -= 25
 
         # Storing the height's that a blob can spawn at
-        heights = [331 - (blob.get_height())-10, 331 - (blob.get_height()*2)+10, 331 - blob.get_height()*3.5]
+        heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
 
         # Positioning the blob
         blobX = width + moveBlobSpeed
@@ -426,14 +426,13 @@ def mainMenu() -> None:
             hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
             arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
 
-            arrowClickVal = arrows.isClicked()
-            handsClickVal = hands.isClicked()
-
-            # Update the control settings in the main program based on the selected setting
-            if arrowClickVal == "ARROWS":
+            # If the arrow key option is selected, make the arrow key flag true and the hand gesture flag false
+            if arrows.isClicked():
                 arrowKeyControls = True
                 handGestureControls = False
-            if handsClickVal == "HANDS":
+
+            # If the hand gesture option is selected, make the hand gesture flag true and the arrow key flag false
+            if hands.isClicked():
                 handGestureControls = True
                 arrowKeyControls = False
 
