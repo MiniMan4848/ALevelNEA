@@ -100,6 +100,9 @@ def gameLoop() -> None:
     # Creating rects and variables for collisions (coin, blob and obstacle rects are in their logic)
     runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
     
+    # Variables for collisions
+    fatalCollisionFlag = False
+
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -117,7 +120,7 @@ def gameLoop() -> None:
             runningFrames = [crouchedRun1, crouchedRun2]
 
             # Moves hitbox with crouch
-            runningRect = pygame.Rect(characterX, characterY, crouchedRun1.get_width(), crouchedRun1.get_height()+13)
+            runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
 
         # If not, use the normal running frames and change the hitbox back 
         else:
@@ -172,7 +175,8 @@ def gameLoop() -> None:
         howMany = (math.ceil((int(width)/int(imageWidth)))) + 1
 
         # Scroll background speed
-        moveBgSpeed -= 10
+        actualBgSpeed = 10
+        moveBgSpeed -= actualBgSpeed
 
         # Reset moveBgSpeed
         # Checks if image is off screen, moveBgSpeed is a negative value so use absolute
@@ -188,7 +192,8 @@ def gameLoop() -> None:
         timeElapsedForSpawningBlob = currentBlobSpawning - blobTimerForSpawning
 
         # Moving the blob
-        moveBlobSpeed -= 25
+        actualBlobSpeed = 25
+        moveBlobSpeed -= actualBlobSpeed
 
         # Storing the height's that a blob can spawn at
         heights = [331 - blob.get_height(), 331 - blob.get_height()*2, 331 - blob.get_height()*3.5]
@@ -222,7 +227,8 @@ def gameLoop() -> None:
         scaledObstacle1 = pygame.transform.scale(obstacle1, (45, 60))
 
         # Moving the obstacle
-        moveObstacleSpeed -= 11
+        actualObstacleSpeed = 11
+        moveObstacleSpeed -= actualObstacleSpeed
 
         # Positioning the obstacle
         obstacleX = width + moveObstacleSpeed
@@ -252,6 +258,7 @@ def gameLoop() -> None:
         # Moving and positioning the coin
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
+        
         coinRect = pygame.Rect(coinX, randomHeight, coinFrames[0].get_width(), coinFrames[0].get_height())
 
         # For the coin's animation
@@ -326,23 +333,37 @@ def gameLoop() -> None:
         screen.blit(highScoreText, (width/72, ((height/2)/10) - 40))
 
         # Logic for collisions #
-        pygame.draw.rect(screen, (255, 0, 0), runningRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), coinRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), blobRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), obstacleRect, 2)
+
+        # Draw Hitboxes
+        #pygame.draw.rect(screen, (255, 0, 0), coinRect, 2)
+        #pygame.draw.rect(screen, (255, 0, 0), runningRect, 2)
+        #pygame.draw.rect(screen, (255, 0, 0), obstacleRect, 2)
+        #pygame.draw.rect(screen, (255, 0, 0), blobRect, 2)
         
         # If character collides with a coin
         if runningRect.colliderect(coinRect):
-            print ("Coin collided")
+            pass
 
         # If character collides with a blob
         if runningRect.colliderect(blobRect):
-            print ("Blob collided")
+            fatalCollisionFlag = True
 
         # If character collides with an obstacle
         if runningRect.colliderect(obstacleRect):
-            print ("Obstacle collided")
-        
+            fatalCollisionFlag = True
+
+        if fatalCollisionFlag == True:
+
+            # Making coin and running animations freeze
+            runningInterval = 999
+            coinInterval = 999
+
+            # Making everything moving onscreen freeze
+            moveCoinSpeed += 15
+            moveObstacleSpeed += actualObstacleSpeed
+            moveBlobSpeed += actualBlobSpeed
+            moveBgSpeed += actualBgSpeed
+
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
