@@ -308,7 +308,10 @@ def gameLoop() -> None:
         # Generating and drawing the current score
         currentScoringTimer = time.time()
         timeElapsedForScoring = currentScoringTimer - scoringTimer
-        score = math.ceil(timeElapsedForScoring * 10)
+        
+        # If there has not been a fatal collision, keep incrementing
+        if fatalCollisionFlag == False:
+            score = math.ceil(timeElapsedForScoring * 10)
 
         scoreText = fonts["Medium"].render(str(score), True, (68, 230, 50))
         # Got x and y by getting a pixel value i like then dividing it by the width/height(/2).
