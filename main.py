@@ -356,6 +356,8 @@ def gameLoop() -> None:
             fatalCollisionFlag = True
 
         if fatalCollisionFlag == True:
+            
+            from classes.button import Button
 
             # Making coin and running animations freeze
             runningInterval = 999
@@ -366,6 +368,23 @@ def gameLoop() -> None:
             moveObstacleSpeed += actualObstacleSpeed
             moveBlobSpeed += actualBlobSpeed
             moveBgSpeed += actualBgSpeed
+
+            # Creating game over text
+            gameOverText = fonts["Header"].render(str("GAME OVER"), True, (184, 12, 0))
+            gameOverTextX = (width - gameOverText.get_width()) //2
+            screen.blit(gameOverText, (gameOverTextX, 20))
+
+            # Showing users score
+            deathScoreText = fonts["Medium"].render(str("YOUR SCORE: " + str(score)), True, (255, 60, 46))
+            deathScoreTextX = (width - deathScoreText.get_width()) //2
+            screen.blit(deathScoreText, (deathScoreTextX, 135))
+
+            # Creates button to go back to main menu
+            deathButton = Button("MAIN MENU", 185, (255, 60, 46), (255, 84, 71), fonts["Medium"], 25, 10, True)
+            deathButton.drawButton()
+            deathButton.isHovered()
+            if deathButton.isClicked():
+                mainMenu()
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
@@ -529,7 +548,7 @@ def highScore(helpButton) -> None:
     fileVal = file.read()
 
     # Gets the highscore text and the value of the file
-    highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (89, 186, 255))
+    highScoreText = fonts["Tiny"].render(f"Highscore: {fileVal}", True, (68, 230, 50))
     
     # Get the position to draw the high score above the help button
     helpButtonCenter = (width // 2, helpButton.y)
