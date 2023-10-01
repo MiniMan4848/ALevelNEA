@@ -33,12 +33,14 @@ handGestureControls = False
             
 def gameLoop() -> None:
 
-    # Loading and storing images for running and crouching animation
+    # Loading and storing images for running animation, crouching animation and death
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
     run2 = pygame.image.load("assets/run/run2.png").convert_alpha()
 
     crouchedRun1 = pygame.image.load("assets/run/crouchedRun1.png").convert_alpha()
     crouchedRun2 = pygame.image.load("assets/run/crouchedRun2.png").convert_alpha()
+
+    deathImage = pygame.image.load("assets/idle/dead.png").convert_alpha()
 
     runningFrames = [run1, run2]
 
@@ -127,48 +129,49 @@ def gameLoop() -> None:
             runningFrames = [run1, run2]
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
 
-        # Checking if the character is not already jumping
-        if not (jumping):
-            # Check for input and start jumping process if there is input
-            if keys[pygame.K_UP] and arrowKeyControls == True:
-                jumping = True
-        else:
-            if jumpCount >= - 10:
-                # Does not move the chatacter as multiplying by 1
-                neg = 1
-
-                # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
-                if jumpCount < 0:
-                    neg = -1
-
-                # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
-                # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
-                # represents c in the quadratic formula which is the y intercept
-                characterY -= (jumpCount **2) * 0.5 * neg
-
-                # Moves hitbox with jump
-                runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
-                # Freezing the character
-                runningFrames = [run1, run1]
-
-                # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
-                jumpCount -= 1
+        if fatalCollisionFlag == False:
+            # Checking if the character is not already jumping
+            if not (jumping):
+                # Check for input and start jumping process if there is input
+                if keys[pygame.K_UP] and arrowKeyControls == True:
+                    jumping = True
             else:
-                # Jump has finished, resets jumping and jumpCount and starts the running animation again
-                jumping = False
-                jumpCount = 10
-                runningFrames = [run1, run2]
+                if jumpCount >= - 10:
+                    # Does not move the chatacter as multiplying by 1
+                    neg = 1
+
+                    # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
+                    if jumpCount < 0:
+                        neg = -1
+
+                    # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
+                    # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
+                    # represents c in the quadratic formula which is the y intercept
+                    characterY -= (jumpCount **2) * 0.5 * neg
+
+                    # Moves hitbox with jump
+                    runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
+                    # Freezing the character
+                    runningFrames = [run1, run1]
+
+                    # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
+                    jumpCount -= 1
+                else:
+                    # Jump has finished, resets jumping and jumpCount and starts the running animation again
+                    jumping = False
+                    jumpCount = 10
+                    runningFrames = [run1, run2]
 
         # Fills the screen grey
         screen.fill(BGCOL)
 
         # Background stuff #
         # As there are going to be multiple images, I am storing them in a dict
-        imgOne = pygame.image.load("assets/background/stars.png").convert_alpha()
+        background = pygame.image.load("assets/background/stars.png").convert_alpha()
 
         # Scaling the image and putting it on screen
-        scaledImage = pygame.transform.scale(imgOne, (330, 330))
+        scaledImage = pygame.transform.scale(background, (330, 330))
 
         # See how many images I am going to need
         imageWidth = scaledImage.get_width()
@@ -285,23 +288,24 @@ def gameLoop() -> None:
         # Drawing the floor #
         floor()
         
-        # Logic for running animation #
-        currentTime = time.time()
-        if currentTime - runningTimer >= runningInterval:
-            runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
-            runningTimer = currentTime
+        if fatalCollisionFlag == False:
+            # Logic for running animation #
+            currentTime = time.time()
+            if currentTime - runningTimer >= runningInterval:
+                runningFrameIndex = (runningFrameIndex + 1) % len(runningFrames)
+                runningTimer = currentTime
 
-        # Draws the running frame to the screen
-        if runningFrames == [run1, run2]:
-            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+            # Draws the running frame to the screen
+            if runningFrames == [run1, run2]:
+                screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
 
-        # Moves the character down by 13px if crouched
-        elif runningFrames == [crouchedRun1, crouchedRun2]:
-            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY+13))
+            # Moves the character down by 13px if crouched
+            elif runningFrames == [crouchedRun1, crouchedRun2]:
+                screen.blit(runningFrames[runningFrameIndex], (characterX, characterY+13))
 
-        # This else statement is for when the player is not running or crouching e.g, jumping
-        else:
-            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+            # This else statement is for when the player is not running or crouching e.g, jumping
+            else:
+                screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
 
         # Scoring stuff #
 
@@ -350,9 +354,11 @@ def gameLoop() -> None:
             fatalCollisionFlag = True
 
         if fatalCollisionFlag == True:
-            
             from classes.button import Button
-
+            
+            runningFrames = [deathImage, deathImage]
+            screen.blit(runningFrames[runningFrameIndex], (characterX, characterY))
+            
             # Making coin and running animations freeze
             runningInterval = 999
             coinInterval = 999
@@ -377,6 +383,7 @@ def gameLoop() -> None:
             deathButton = Button("MAIN MENU", 185, (255, 60, 46), (255, 84, 71), fonts["Medium"], 25, 10, True)
             deathButton.drawButton()
             deathButton.isHovered()
+            
             if deathButton.isClicked():
                 mainMenu()
 
