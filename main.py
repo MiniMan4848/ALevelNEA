@@ -129,6 +129,7 @@ def gameLoop() -> None:
             runningFrames = [run1, run2]
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
 
+        # Only be able to jump if the character is alive
         if fatalCollisionFlag == False:
             # Checking if the character is not already jumping
             if not (jumping):
@@ -288,6 +289,7 @@ def gameLoop() -> None:
         # Drawing the floor #
         floor()
         
+        # Only be able to crouch if the character is alive
         if fatalCollisionFlag == False:
             # Logic for running animation #
             currentTime = time.time()
@@ -328,7 +330,7 @@ def gameLoop() -> None:
             file = open("highscore.txt", "w")
             file.write(str(score))
 
-        # If there has not been a fatal collision...
+        # # Only be able to imacrement score if the character is alive
         if fatalCollisionFlag == False:
             score = math.ceil(timeElapsedForScoring * 10)
 
