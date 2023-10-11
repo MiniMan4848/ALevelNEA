@@ -104,6 +104,9 @@ def gameLoop() -> None:
     
     # Variables for collisions
     fatalCollisionFlag = False
+    coinCollisionFlag = False
+    
+    coinRespawnInterval = 5
 
     # Loop for the game loop
     while True:
@@ -251,7 +254,7 @@ def gameLoop() -> None:
             obstacleTimerForSpawning = currentObstacleSpawning
 
         screen.blit(scaledObstacle1, (obstacleX, obstacleY))
-
+        
         # Coin stuff #
         currentCoinTimeForAnimation = time.time()
         currentCoinTimeForSpawning = time.time()
@@ -278,13 +281,15 @@ def gameLoop() -> None:
             randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
 
             # Create a new spawn interval
-            coinSpawnInterval = random.randint(5, 15)
+            coinSpawnInterval = random.randint(3, 10)
 
             # Reset the timer
             coinTimerForSpawning = currentCoinTimeForSpawning
 
-        # Draw the coin
-        screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
+        # Only draw a coin if it has not been collided with
+        if coinCollisionFlag == False:
+            # Draw the coin
+            screen.blit(coinFrames[coinFrameIndex], (coinX, randomHeight))
 
         # Drawing the floor #
         floor()
@@ -345,7 +350,7 @@ def gameLoop() -> None:
         
         # If character collides with a coin
         if runningRect.colliderect(coinRect):
-            pass
+            coinCollisionFlag = True
 
         # If character collides with a blob
         if runningRect.colliderect(blobRect):
@@ -388,6 +393,12 @@ def gameLoop() -> None:
             
             if deathButton.isClicked():
                 mainMenu()
+
+        if coinCollisionFlag == True:
+            # Check if the time elapsed for spawning is >= than coin respawn interval
+            if timeElapsedForSpawning >= coinRespawnInterval:
+                # If so, reset all these variables used in the coin operation which allows coins to spawn again
+                coinCollisionFlag = False
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
