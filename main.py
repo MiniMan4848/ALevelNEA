@@ -106,7 +106,8 @@ def gameLoop() -> None:
     fatalCollisionFlag = False
     coinCollisionFlag = False
     
-    coinRespawnInterval = 5
+    coinRespawnInterval = 3
+    coinCollisionCount = 0
 
     # Loop for the game loop
     while True:
@@ -266,7 +267,11 @@ def gameLoop() -> None:
         moveCoinSpeed -= 15
         coinX = width + moveCoinSpeed
         
-        coinRect = pygame.Rect(coinX, randomHeight, coinFrames[0].get_width(), coinFrames[0].get_height())
+        # Move coin's hitbox off screen after a collision
+        if coinCollisionFlag == False:
+            coinRect = pygame.Rect(coinX, randomHeight, coinFrames[0].get_width(), coinFrames[0].get_height())
+        else:
+            coinRect = pygame.Rect(10000, 10000, coinFrames[0].get_width(), coinFrames[0].get_height())
 
         # For the coin's animation
         if TimeElapsedForAnimation >= coinInterval:
@@ -346,11 +351,19 @@ def gameLoop() -> None:
             # is 72 and so width/72 == 20. Same principle for the height.
             screen.blit(scoreText, (width/72, ((height/2)/10)))
 
+        # Draw Hitboxes
+        pygame.draw.rect(screen, (255, 0, 0), coinRect, 2)
+        pygame.draw.rect(screen, (255, 0, 0), runningRect, 2)
+        pygame.draw.rect(screen, (255, 0, 0), obstacleRect, 2)
+        pygame.draw.rect(screen, (255, 0, 0), blobRect, 2)
+
         # Logic for collisions #
         
         # If character collides with a coin
         if runningRect.colliderect(coinRect):
             coinCollisionFlag = True
+            coinCollisionCount += 1
+            print (coinCollisionCount)
 
         # If character collides with a blob
         if runningRect.colliderect(blobRect):
@@ -359,6 +372,7 @@ def gameLoop() -> None:
         # If character collides with an obstacle
         if runningRect.colliderect(obstacleRect):
             fatalCollisionFlag = True
+            
 
         if fatalCollisionFlag == True:
             from classes.button import Button
@@ -397,9 +411,10 @@ def gameLoop() -> None:
         if coinCollisionFlag == True:
             # Check if the time elapsed for spawning is >= than coin respawn interval
             if timeElapsedForSpawning >= coinRespawnInterval:
-                # If so, reset all these variables used in the coin operation which allows coins to spawn again
+                # If so, reset all variables used in the coin operation which allows coins to spawn again
+                # and increment the coin collision counter by 1
                 coinCollisionFlag = False
-
+        
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
