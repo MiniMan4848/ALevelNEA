@@ -415,6 +415,12 @@ def gameLoop() -> None:
                 # and increment the coin collision counter by 1
                 coinCollisionFlag = False
         
+        # If 5 coins have been collected, select random powerup
+        if coinCollisionCount == 5:
+            print ("COLLIDED 5 TIMES")
+            coinCollisionCount = 0
+
+        
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
