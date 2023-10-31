@@ -373,7 +373,6 @@ def gameLoop() -> None:
         if runningRect.colliderect(obstacleRect):
             fatalCollisionFlag = True
             
-
         if fatalCollisionFlag == True:
             from classes.button import Button
             
@@ -414,12 +413,53 @@ def gameLoop() -> None:
                 # If so, reset all variables used in the coin operation which allows coins to spawn again
                 # and increment the coin collision counter by 1
                 coinCollisionFlag = False
-        
-        # If 5 coins have been collected, select random powerup
-        if coinCollisionCount == 5:
-            print ("COLLIDED 5 TIMES")
-            coinCollisionCount = 0
 
+        # Coin counter bar stuff
+        if fatalCollisionFlag == False:
+            emptyBarRect = pygame.Rect(21, 93, 200, 35)
+
+            # The x value is based off of the width of the other rectangles
+            rect1 = pygame.Rect(200-(40+141)+2, 93, 40, 35)
+            rect2 = pygame.Rect(200-(40+101)+2, 93, 40, 35)
+            rect3 = pygame.Rect(200-(40+61)+2, 93, 40, 35)
+            rect4 = pygame.Rect(200-(40+21)+2, 93, 40, 35)
+            rect5 = pygame.Rect(200-21, 93, 40, 35)
+
+            if coinCollisionCount == 1:
+                pygame.draw.rect(screen, (255, 200, 0), rect1, 0)
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
+
+            elif coinCollisionCount == 2:
+                pygame.draw.rect(screen, (255, 200, 0), rect1, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect2, 0)
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
+
+            elif coinCollisionCount == 3:
+                pygame.draw.rect(screen, (255, 200, 0), rect1, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect2, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect3, 0)
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
+
+            elif coinCollisionCount == 4:
+                pygame.draw.rect(screen, (255, 200, 0), rect1, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect2, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect3, 0)
+                pygame.draw.rect(screen, (255, 200, 0), rect4, 0)
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
+
+            # If 5 coins have been collected, select random powerup
+            elif coinCollisionCount == 5:
+                pygame.draw.rect(screen, (255, 230, 0), rect1, 0)
+                pygame.draw.rect(screen, (255, 230, 0), rect2, 0)
+                pygame.draw.rect(screen, (255, 230, 0), rect3, 0)
+                pygame.draw.rect(screen, (255, 230, 0), rect4, 0)
+                pygame.draw.rect(screen, (255, 230, 0), rect5, 0)
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
+
+                # When the powerup ends, then make the count 0
+                #coinCollisionCount = 0
+            else:
+                pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
         
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
