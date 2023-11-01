@@ -58,6 +58,8 @@ def gameLoop() -> None:
 
     obstacleTimerForSpawning = time.time()
 
+    shieldTimer = time.time()
+
     # Interval's between frame switches and frame indexes
     runningInterval = 0.1
     runningFrameIndex = 0
@@ -107,7 +109,7 @@ def gameLoop() -> None:
     coinCollisionFlag = False
     
     coinRespawnInterval = 3
-    coinCollisionCount = 0
+    coinCollisionCount = 4
 
     # Loop for the game loop
     while True:
@@ -423,6 +425,7 @@ def gameLoop() -> None:
 
             # Drawing the rectangles
             if coinCollisionCount >= 5:
+                shield(coinCollisionCount, characterX, characterY, shieldTimer)
                 # When the powerup ends, make the count 0
                 #coinCollisionCount = 0
                 colour = (255, 230, 0)
@@ -607,6 +610,25 @@ def highScore(helpButton) -> None:
 
     # Closes the file once the operation has been completed
     file.close()
+
+def shield(coinCollisionCount, characterX, characterY, shieldTimer):
+    currentShieldTimer = time.time()
+    timeElapsedForShield = currentShieldTimer - shieldTimer
+
+    if timeElapsedForShield <= 30:
+        rotateSpeed = -5
+
+        # load and rotate image
+        shieldImage = pygame.image.load("assets/powerups/shield.png").convert_alpha()
+        # image, angle, ticks constantly change so good to use in this context
+        rotatedShield = pygame.transform.rotate(shieldImage, pygame.time.get_ticks() // rotateSpeed)
+
+        # positioning
+        shieldRect = rotatedShield.get_rect()
+        shieldRect.center = (characterX+40, characterY+25)
+
+        # Drawing, if not topleft it bounces
+        screen.blit(rotatedShield, shieldRect.topleft)
 
 def floor(): 
     pygame.draw.line(screen, (172, 172, 172), (0,331), (width, 331), 2) 
