@@ -27,11 +27,14 @@ fonts = {
     "Tiny":pygame.font.Font("assets/fonts/Gotham Black.ttf", 20)
 }
 
-# Variables used in the game loop and main menu
+# Variables used in multiple functions
 arrowKeyControls = True
 handGestureControls = False
-            
+
+coinCollisionCount = 0
+
 def gameLoop() -> None:
+    global coinCollisionCount
 
     # Loading and storing images for running animation, crouching animation and death
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
@@ -104,12 +107,14 @@ def gameLoop() -> None:
     # Creating rects and variables for collisions (coin, blob and obstacle rects are in their logic)
     runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
     
-    # Variables for collisions
+    # Variables for collisions and powerups
     fatalCollisionFlag = False
     coinCollisionFlag = False
     
     coinRespawnInterval = 3
     coinCollisionCount = 4
+    
+    shieldActive = False
 
     # Loop for the game loop
     while True:
@@ -362,17 +367,16 @@ def gameLoop() -> None:
         # Logic for collisions #
         
         # If character collides with a coin
-        if runningRect.colliderect(coinRect):
+        if runningRect.colliderect(coinRect) and shieldActive == False:
             coinCollisionFlag = True
             coinCollisionCount += 1
-            print (coinCollisionCount)
 
         # If character collides with a blob
-        if runningRect.colliderect(blobRect):
+        if runningRect.colliderect(blobRect) and shieldActive == False:
             fatalCollisionFlag = True
 
         # If character collides with an obstacle
-        if runningRect.colliderect(obstacleRect):
+        if runningRect.colliderect(obstacleRect) and shieldActive == False:
             fatalCollisionFlag = True
             
         if fatalCollisionFlag == True:
@@ -416,7 +420,7 @@ def gameLoop() -> None:
                 # and increment the coin collision counter by 1
                 coinCollisionFlag = False
 
-        # Coin counter bar stuff
+        # Coin counter bar stuff #
         if fatalCollisionFlag == False:
             emptyBarRect = pygame.Rect(21, 93, 200, 35)
 
@@ -425,9 +429,6 @@ def gameLoop() -> None:
 
             # Drawing the rectangles
             if coinCollisionCount >= 5:
-                shield(coinCollisionCount, characterX, characterY, shieldTimer)
-                # When the powerup ends, make the count 0
-                #coinCollisionCount = 0
                 colour = (255, 230, 0)
             else:
                 colour = (255, 200, 0)
@@ -436,7 +437,48 @@ def gameLoop() -> None:
                 pygame.draw.rect(screen, colour, rects[4 - i])
 
             pygame.draw.rect(screen, ('black'), emptyBarRect, 2)
-        
+
+            # shield stuff #
+
+            # Start the current timer at the start
+            currentShieldTimer = time.time()
+
+            # Make shield active, reset the timer and coin count when hitting 5 coins
+            if coinCollisionCount >= 5:
+                shieldActive = True
+                shieldTimer = currentShieldTimer
+                coinCollisionCount = 0
+
+            # Make the time elapsed variable
+            timeElapsedForShield = currentShieldTimer - shieldTimer
+            
+            # If the time surpasses 30 seconds, make the time elapsed for shield false
+            if timeElapsedForShield >= 5:
+                shieldActive = False
+            
+            # If the shield is active, spawn the shield and make the bar yellow
+            if shieldActive:
+                rotateSpeed = -5
+                colour = (255, 230, 0)
+
+                # load and rotate image
+                shieldImage = pygame.image.load("assets/powerups/shield.png").convert_alpha()
+                # image, angle, ticks constantly change so good to use in this context
+                rotatedShield = pygame.transform.rotate(shieldImage, pygame.time.get_ticks() // rotateSpeed)
+
+                # positioning
+                shieldRect = rotatedShield.get_rect()
+                shieldRect.center = (characterX+40, characterY+25)
+
+                # Drawing, if not topleft it bounces
+                screen.blit(rotatedShield, shieldRect.topleft)
+
+                # in range 5 because there are 5 divisions of the bar
+                for i in range(5):
+                    pygame.draw.rect(screen, colour, rects[4 - i])
+
+            print ("Time elapsed: " + str(timeElapsedForShield))
+            print ("Coin count: " + str(coinCollisionCount))
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
@@ -610,25 +652,6 @@ def highScore(helpButton) -> None:
 
     # Closes the file once the operation has been completed
     file.close()
-
-def shield(coinCollisionCount, characterX, characterY, shieldTimer):
-    currentShieldTimer = time.time()
-    timeElapsedForShield = currentShieldTimer - shieldTimer
-
-    if timeElapsedForShield <= 30:
-        rotateSpeed = -5
-
-        # load and rotate image
-        shieldImage = pygame.image.load("assets/powerups/shield.png").convert_alpha()
-        # image, angle, ticks constantly change so good to use in this context
-        rotatedShield = pygame.transform.rotate(shieldImage, pygame.time.get_ticks() // rotateSpeed)
-
-        # positioning
-        shieldRect = rotatedShield.get_rect()
-        shieldRect.center = (characterX+40, characterY+25)
-
-        # Drawing, if not topleft it bounces
-        screen.blit(rotatedShield, shieldRect.topleft)
 
 def floor(): 
     pygame.draw.line(screen, (172, 172, 172), (0,331), (width, 331), 2) 
