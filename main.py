@@ -453,7 +453,7 @@ def gameLoop() -> None:
             timeElapsedForShield = currentShieldTimer - shieldTimer
             
             # If the time surpasses 30 seconds, make the time elapsed for shield false
-            if timeElapsedForShield >= 5:
+            if timeElapsedForShield >= 30:
                 shieldActive = False
             
             # If the shield is active, spawn the shield and make the bar yellow
@@ -478,9 +478,9 @@ def gameLoop() -> None:
                     pygame.draw.rect(screen, colour, rects[4 - i])
 
             # If character collides with an obstacle with shield
-            if runningRect.colliderect(obstacleRect) and shieldActive:
+            if (runningRect.colliderect(obstacleRect) or runningRect.colliderect(blobRect)) and shieldActive:
                 #number here is (the time the shield is active for in total)-(the time of invulnerability)
-                shieldTimer = currentShieldTimer-4.8
+                shieldTimer = currentShieldTimer-29.8
 
             print ("Time elapsed: " + str(timeElapsedForShield))
             print ("Coin count: " + str(coinCollisionCount))
