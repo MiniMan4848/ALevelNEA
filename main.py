@@ -367,16 +367,16 @@ def gameLoop() -> None:
         # Logic for collisions #
         
         # If character collides with a coin
-        if runningRect.colliderect(coinRect) and shieldActive == False:
+        if runningRect.colliderect(coinRect) and not shieldActive:
             coinCollisionFlag = True
             coinCollisionCount += 1
 
         # If character collides with a blob
-        if runningRect.colliderect(blobRect) and shieldActive == False:
+        if runningRect.colliderect(blobRect) and not shieldActive:
             fatalCollisionFlag = True
 
         # If character collides with an obstacle
-        if runningRect.colliderect(obstacleRect) and shieldActive == False:
+        if runningRect.colliderect(obstacleRect) and not shieldActive:
             fatalCollisionFlag = True
             
         if fatalCollisionFlag == True:
@@ -476,6 +476,11 @@ def gameLoop() -> None:
                 # in range 5 because there are 5 divisions of the bar
                 for i in range(5):
                     pygame.draw.rect(screen, colour, rects[4 - i])
+
+            # If character collides with an obstacle with shield
+            if runningRect.colliderect(obstacleRect) and shieldActive:
+                #number here is (the time the shield is active for in total)-(the time of invulnerability)
+                shieldTimer = currentShieldTimer-4.8
 
             print ("Time elapsed: " + str(timeElapsedForShield))
             print ("Coin count: " + str(coinCollisionCount))
