@@ -1,4 +1,4 @@
-# Importing modules #git push NEA main --force# Forces push.
+# Importing modules#git push NEA main --force# Forces push.
 import pygame
 import sys
 import random
@@ -480,10 +480,8 @@ def gameLoop() -> None:
             # If character collides with an obstacle with shield
             if (runningRect.colliderect(obstacleRect) or runningRect.colliderect(blobRect)) and shieldActive:
                 #number here is (the time the shield is active for in total)-(the time of invulnerability)
-                shieldTimer = currentShieldTimer-29.8
+                shieldTimer = currentShieldTimer-29.9
 
-            print ("Time elapsed: " + str(timeElapsedForShield))
-            print ("Coin count: " + str(coinCollisionCount))
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
         pygame.display.update()
