@@ -5,8 +5,35 @@ import random
 import math
 import time
 
+# Computer vision modules
+import cv2
+import numpy as np
+import mediapipe as mp
+import tensorflow as tf
+from keras.models import load_model
+
 # Initialise pygame
 pygame.init()
+
+# Initialise mediapipe #
+# Peforms hand recognition algorithm, object stored in hands
+mpHands = mp.solutions.hands
+# .Hands configures model, paramaters are self explanatory
+hands = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+# Draws detected key points so don't have to do it manually
+mpDraw = mp.solutions.drawing_utils
+
+# Initialise tensorflow and webcam #
+# Load tensorflow pretrained model
+model = load_model("HandTrack")
+# Initialize webcam
+cap = cv2.VideoCapture(0)
+
+# Load gesture names
+f = open("HandTrack/gesture.names" , "r")
+gestureNames = f.read().split('\n')
+f.close()
+print(gestureNames)
 
 # Creating the game window, 32:9 aspect ratio
 screen = pygame.display.set_mode()
@@ -33,7 +60,7 @@ handGestureControls = False
 
 coinCollisionCount = 0
 
-def gameLoop() -> None:
+def gameLoop() -> None: 
     global coinCollisionCount
 
     # Loading and storing images for running animation, crouching animation and death
@@ -497,6 +524,7 @@ def mainMenu() -> None:
     # Making the variables globally accessible
     global arrowKeyControls
     global handGestureControls
+    global hands
 
     # Loading and storing images for the idle aniamtion
     openEyes = pygame.image.load("assets/idle/idle1.png").convert_alpha()
@@ -538,7 +566,41 @@ def mainMenu() -> None:
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
         floor()
+
+        # vision #
+        # Read each frame
+        res, frame = cap.read()
+        x, y, z = frame.shape 
         
+        # vertically flips the frame
+        frame = cv2.flip(frame, 1)
+
+        # change frame to RGB
+        frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # Get hand landmark prediction, returns result class
+        result = hands.process(frameRGB)
+
+        className = ""
+
+        # If a hand is detected
+        if result.multi_hand_landmarks:
+            landmarks = []
+            # Loop through detection and store coordinate in list
+            for handslms in result.multi_hand_landmarks:
+                for xyz in handslms.landmark:
+                    print (xyz)
+                    landmarkX = int(xyz.x * x)
+                    landmarkY = int(xyz.y * y)
+
+                    landmarks.append([landmarkX, landmarkY])
+
+                    # Draw landmarks on frames
+                    mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+
+        # Show the final output
+        cv2.imshow("Window", frame)
+
         # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
         # Gets the current time in ms
         currentTime = time.time()
