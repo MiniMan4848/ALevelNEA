@@ -589,14 +589,22 @@ def mainMenu() -> None:
             # Loop through detection and store coordinate in list
             for handslms in result.multi_hand_landmarks:
                 for xyz in handslms.landmark:
-                    print (xyz)
                     landmarkX = int(xyz.x * x)
                     landmarkY = int(xyz.y * y)
 
                     landmarks.append([landmarkX, landmarkY])
 
-                    # Draw landmarks on frames
-                    mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+                # Draw landmarks on frames
+                mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+
+                # Predict the gesture
+                prediction = model.predict([landmarks])
+                gestureID = np.argmax(prediction)
+                gestureName = gestureNames[gestureID]
+
+                # Put the name of gesture on screen
+                cv2.putText(frame, gestureName, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),
+                2, cv2.LINE_AA)                   
 
         # Show the final output
         cv2.imshow("Window", frame)
