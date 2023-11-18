@@ -581,8 +581,6 @@ def mainMenu() -> None:
         # Get hand landmark prediction, returns result class
         result = hands.process(frameRGB)
 
-        className = ""
-
         # If a hand is detected
         if result.multi_hand_landmarks:
             landmarks = []
@@ -606,8 +604,14 @@ def mainMenu() -> None:
                 cv2.putText(frame, gestureName, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),
                 2, cv2.LINE_AA)                   
 
+        # Resize and reposition the frame
+        frame = cv2.resize(frame, (160, 90))
+
         # Show the final output
         cv2.imshow("Window", frame)
+
+        # Move the window
+        cv2.moveWindow("Window", 0, 305)
 
         # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
         # Gets the current time in ms
