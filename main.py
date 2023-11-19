@@ -600,9 +600,8 @@ def mainMenu() -> None:
                 gestureID = np.argmax(prediction)
                 gestureName = gestureNames[gestureID]
 
-                # Put the name of gesture on screen
-                cv2.putText(frame, gestureName, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),
-                2, cv2.LINE_AA)                   
+                # print the current gesture to console
+                print ("Current gesture: " + str(gestureName))
 
         # Resize and reposition the frame
         frame = cv2.resize(frame, (160, 90))
