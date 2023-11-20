@@ -19,7 +19,7 @@ pygame.init()
 # Peforms hand recognition algorithm, object stored in hands
 mpHands = mp.solutions.hands
 # .Hands configures model, paramaters are self explanatory
-hands = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+handsConfiguration = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 # Draws detected key points so don't have to do it manually
 mpDraw = mp.solutions.drawing_utils
 
@@ -55,13 +55,15 @@ fonts = {
 }
 
 # Variables used in multiple functions
-arrowKeyControls = True
-handGestureControls = False
+arrowKeyControls = False
+handGestureControls = True
 
 coinCollisionCount = 0
 
 def gameLoop() -> None: 
     global coinCollisionCount
+    global handGestureControls
+    global arrowKeyControls
 
     # Loading and storing images for running animation, crouching animation and death
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
@@ -143,6 +145,9 @@ def gameLoop() -> None:
     
     shieldActive = False
 
+    # Hand gesture variables
+    gestureName = ""
+
     # Loop for the game loop
     while True:
         for event in pygame.event.get():
@@ -150,12 +155,54 @@ def gameLoop() -> None:
                 pygame.quit()
                 sys.exit()
 
-        # Logic for jumping #
-        keys = pygame.key.get_pressed()
+        if handGestureControls == True:
+            # vision #
+            # Read each frame
+            res, frame = cap.read()
+            x, y, z = frame.shape 
+            
+            # vertically flips the frame
+            frame = cv2.flip(frame, 1)
 
-        # Logic for crouching #
-        # Check for down arrow key input 
-        if keys[pygame.K_DOWN] and arrowKeyControls == True:
+            # change frame to RGB
+            frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            # Get hand landmark prediction, returns result class
+            result = handsConfiguration.process(frameRGB)
+
+            # If a hand is detected
+            if result.multi_hand_landmarks:
+                landmarks = []
+                # Loop through detection and store coordinate in list
+                for handslms in result.multi_hand_landmarks:
+                    for xyz in handslms.landmark:
+                        landmarkX = int(xyz.x * x)
+                        landmarkY = int(xyz.y * y)
+
+                        landmarks.append([landmarkX, landmarkY])
+
+                    # Draw landmarks on frames
+                    mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+
+                    # Predict the gesture
+                    prediction = model.predict([landmarks])
+                    gestureID = np.argmax(prediction)
+                    gestureName = gestureNames[gestureID]
+
+                    # print the current gesture to console
+                    print ("Current gesture: " + str(gestureName))
+
+            # Resize and reposition the frame
+            frame = cv2.resize(frame, (160, 90))
+
+            # Show the final output
+            cv2.imshow("Window", frame)
+
+            # Move the window
+            cv2.moveWindow("Window", 0, 305)
+
+        # Logic for crouching with hand gestures #
+        if gestureName == "crouch":
             # If there is down arrow key input, switch to the crouching frames
             runningFrames = [crouchedRun1, crouchedRun2]
 
@@ -167,12 +214,12 @@ def gameLoop() -> None:
             runningFrames = [run1, run2]
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
 
-        # Only be able to jump if the character is alive
+        # Logic for jumping with hand gestures #
         if fatalCollisionFlag == False:
             # Checking if the character is not already jumping
             if not (jumping):
                 # Check for input and start jumping process if there is input
-                if keys[pygame.K_UP] and arrowKeyControls == True:
+                if gestureName == "jump":
                     jumping = True
             else:
                 if jumpCount >= - 10:
@@ -201,6 +248,59 @@ def gameLoop() -> None:
                     jumping = False
                     jumpCount = 10
                     runningFrames = [run1, run2]
+        
+        if handGestureControls == False:
+            keys = pygame.key.get_pressed()
+
+            # Logic for crouching with arrow keys #
+            # Check for down arrow key input 
+            if (keys[pygame.K_DOWN] and arrowKeyControls == True):
+                # If there is down arrow key input, switch to the crouching frames
+                runningFrames = [crouchedRun1, crouchedRun2]
+
+                # Moves hitbox with crouch
+                runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
+
+            # If not, use the normal running frames and change the hitbox back 
+            else:
+                runningFrames = [run1, run2]
+                runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
+            # Logic for jumping with arrow keys #
+            # Only be able to jump if the character is alive
+            if fatalCollisionFlag == False:
+                # Checking if the character is not already jumping
+                if not (jumping):
+                    # Check for input and start jumping process if there is input
+                    if keys[pygame.K_UP] and arrowKeyControls == True:
+                        jumping = True
+                else:
+                    if jumpCount >= - 10:
+                        # Does not move the chatacter as multiplying by 1
+                        neg = 1
+
+                        # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
+                        if jumpCount < 0:
+                            neg = -1
+
+                        # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
+                        # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
+                        # represents c in the quadratic formula which is the y intercept
+                        characterY -= (jumpCount **2) * 0.5 * neg
+
+                        # Moves hitbox with jump
+                        runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
+                        # Freezing the character
+                        runningFrames = [run1, run1]
+
+                        # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
+                        jumpCount -= 1
+                    else:
+                        # Jump has finished, resets jumping and jumpCount and starts the running animation again
+                        jumping = False
+                        jumpCount = 10
+                        runningFrames = [run1, run2]
 
         # Fills the screen grey
         screen.fill(BGCOL)
@@ -510,6 +610,7 @@ def gameLoop() -> None:
                 shieldTimer = currentShieldTimer-29.9
 
         # Makes the game run at 60 FPS
+        # 60 for arrow, higher for hands, each frame for hands takes longer so need higher fps
         pygame.time.Clock().tick(60)
         pygame.display.update()
 
@@ -566,51 +667,6 @@ def mainMenu() -> None:
         # Fills the screen grey and makes the floor
         screen.fill(BGCOL)
         floor()
-
-        # vision #
-        # Read each frame
-        res, frame = cap.read()
-        x, y, z = frame.shape 
-        
-        # vertically flips the frame
-        frame = cv2.flip(frame, 1)
-
-        # change frame to RGB
-        frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # Get hand landmark prediction, returns result class
-        result = hands.process(frameRGB)
-
-        # If a hand is detected
-        if result.multi_hand_landmarks:
-            landmarks = []
-            # Loop through detection and store coordinate in list
-            for handslms in result.multi_hand_landmarks:
-                for xyz in handslms.landmark:
-                    landmarkX = int(xyz.x * x)
-                    landmarkY = int(xyz.y * y)
-
-                    landmarks.append([landmarkX, landmarkY])
-
-                # Draw landmarks on frames
-                mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
-
-                # Predict the gesture
-                prediction = model.predict([landmarks])
-                gestureID = np.argmax(prediction)
-                gestureName = gestureNames[gestureID]
-
-                # print the current gesture to console
-                print ("Current gesture: " + str(gestureName))
-
-        # Resize and reposition the frame
-        frame = cv2.resize(frame, (160, 90))
-
-        # Show the final output
-        cv2.imshow("Window", frame)
-
-        # Move the window
-        cv2.moveWindow("Window", 0, 305)
 
         # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
         # Gets the current time in ms
@@ -686,6 +742,7 @@ def mainMenu() -> None:
                 hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
 
             # Carries on from the second if statement, this changes the colour of the 'hands' button
+            # Run the hand gesture recognition code
             if handGestureControls == True and arrowKeyControls == False:
                 arrows = BackButton("ARROWS", (width-455)//2+218, (height-410)//22+300, (0, 0, 0), (50, 156, 78), fonts["Medium"], 10, 10, True)
                 hands = BackButton("HANDS", (width-455)//2+80, (height-410)//22+300, (42, 189, 81), (30, 212, 78), fonts["Medium"], 10, 10, True)
@@ -696,6 +753,56 @@ def mainMenu() -> None:
             arrows.drawButton()
             arrows.isHovered()
 
+        if handGestureControls == True:
+            # vision #
+            # Read each frame
+            res, frame = cap.read()
+            x, y, z = frame.shape 
+            
+            # vertically flips the frame
+            frame = cv2.flip(frame, 1)
+
+            # change frame to RGB
+            frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            # Get hand landmark prediction, returns result class
+            result = handsConfiguration.process(frameRGB)
+
+            # If a hand is detected
+            if result.multi_hand_landmarks:
+                landmarks = []
+                # Loop through detection and store coordinate in list
+                for handslms in result.multi_hand_landmarks:
+                    for xyz in handslms.landmark:
+                        landmarkX = int(xyz.x * x)
+                        landmarkY = int(xyz.y * y)
+
+                        landmarks.append([landmarkX, landmarkY])
+
+                    # Draw landmarks on frames
+                    mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+
+                    # Predict the gesture
+                    prediction = model.predict([landmarks])
+                    gestureID = np.argmax(prediction)
+                    gestureName = gestureNames[gestureID]
+
+                    # print the current gesture to console
+                    print ("Current gesture: " + str(gestureName))
+
+            # Resize and reposition the frame
+            frame = cv2.resize(frame, (160, 90))
+
+            # Show the final output
+            cv2.imshow("Window", frame)
+
+            # Move the window
+            cv2.moveWindow("Window", 0, 305)
+
+        if arrowKeyControls == True:
+            cv2.destroyAllWindows()
+
+        # If the help button is pressed
         if helpFlag == True:
             from classes.popup import Popup
             # Create an instance of a popup window
