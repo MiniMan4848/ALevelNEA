@@ -215,7 +215,7 @@ def gameLoop() -> None:
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
 
         # Logic for jumping with hand gestures #
-        if fatalCollisionFlag == False:
+        if fatalCollisionFlag == False and arrowKeyControls == False:
             # Checking if the character is not already jumping
             if not (jumping):
                 # Check for input and start jumping process if there is input
