@@ -244,10 +244,10 @@ def gameLoop() -> None:
                         jumpCount = 10
                         runningFrames = [run1, run2]
         
+        # Logic for crouching with arrow keys #
         if handGestureControls == False:
             keys = pygame.key.get_pressed()
-
-            # Logic for crouching with arrow keys #
+            
             # Check for down arrow key input 
             if keys[pygame.K_DOWN] and arrowKeyControls == True:
                 crouching = True
@@ -290,16 +290,17 @@ def gameLoop() -> None:
                         jumpCount = 10
                         runningFrames = [run1, run2]
         
+        # If down arrow was pressed or crouch hand gesture was made
         if crouching == True:
             # Switch to crouching frames and move hitbox
             runningFrames = [crouchedRun1, crouchedRun2]
             runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
 
+        # When the gesture was stopped and the button was released
         if crouching == False:
             # Switch back to normal frames and hitbox
             runningFrames = [run1, run2]
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
 
         # Fills the screen grey
         screen.fill(BGCOL)
