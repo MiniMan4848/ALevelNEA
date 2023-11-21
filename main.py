@@ -212,37 +212,12 @@ def gameLoop() -> None:
             # Logic for jumping with hand gestures #
             if fatalCollisionFlag == False and arrowKeyControls == False:
                 # Checking if the character is not already jumping
-                if not (jumping):
+                if not jumping:
                     # Check for input and start jumping process if there is input
                     if gestureName == "jump":
                         jumping = True
-                else:
-                    if jumpCount >= - 10:
-                        # Does not move the chatacter as multiplying by 1
-                        neg = 1
-
-                        # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
-                        if jumpCount < 0:
-                            neg = -1
-
-                        # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
-                        # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
-                        # represents c in the quadratic formula which is the y intercept
-                        characterY -= (jumpCount **2) * 0.5 * neg
-
-                        # Moves hitbox with jump
-                        runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
-                        # Freezing the character
-                        runningFrames = [run1, run1]
-
-                        # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
-                        jumpCount -= 1
                     else:
-                        # Jump has finished, resets jumping and jumpCount and starts the running animation again
                         jumping = False
-                        jumpCount = 10
-                        runningFrames = [run1, run2]
         
         # Logic for crouching with arrow keys #
         if handGestureControls == False:
@@ -256,39 +231,14 @@ def gameLoop() -> None:
 
             # Logic for jumping with arrow keys #
             # Only be able to jump if the character is alive
-            if fatalCollisionFlag == False:
+            if fatalCollisionFlag == False and handGestureControls == False:
                 # Checking if the character is not already jumping
-                if not (jumping):
+                if not jumping:
                     # Check for input and start jumping process if there is input
                     if keys[pygame.K_UP] and arrowKeyControls == True:
                         jumping = True
-                else:
-                    if jumpCount >= - 10:
-                        # Does not move the chatacter as multiplying by 1
-                        neg = 1
-
-                        # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
-                        if jumpCount < 0:
-                            neg = -1
-
-                        # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
-                        # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
-                        # represents c in the quadratic formula which is the y intercept
-                        characterY -= (jumpCount **2) * 0.5 * neg
-
-                        # Moves hitbox with jump
-                        runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
-                        # Freezing the character
-                        runningFrames = [run1, run1]
-
-                        # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
-                        jumpCount -= 1
                     else:
-                        # Jump has finished, resets jumping and jumpCount and starts the running animation again
                         jumping = False
-                        jumpCount = 10
-                        runningFrames = [run1, run2]
         
         # If down arrow was pressed or crouch hand gesture was made
         if crouching == True:
@@ -302,6 +252,35 @@ def gameLoop() -> None:
             runningFrames = [run1, run2]
             runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
 
+        # If up arrow was pressed or jump gesture was made
+        if jumping == True:
+            if jumpCount >= - 10:
+                # Does not move the chatacter as multiplying by 1
+                neg = 1
+
+                # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
+                if jumpCount < 0:
+                    neg = -1
+
+                # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
+                # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
+                # represents c in the quadratic formula which is the y intercept
+                characterY -= (jumpCount **2) * 0.5 * neg
+
+                # Moves hitbox with jump
+                runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
+                # Freezing the character
+                runningFrames = [run1, run1]
+
+                # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
+                jumpCount -= 1
+            else:
+                # Jump has finished, resets jumping and jumpCount and starts the running animation again
+                jumping = False
+                jumpCount = 10
+                runningFrames = [run1, run2]
+        
         # Fills the screen grey
         screen.fill(BGCOL)
 
