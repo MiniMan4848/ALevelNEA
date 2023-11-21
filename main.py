@@ -770,25 +770,10 @@ def mainMenu() -> None:
 
             # If a hand is detected
             if result.multi_hand_landmarks:
-                landmarks = []
                 # Loop through detection and store coordinate in list
                 for handslms in result.multi_hand_landmarks:
-                    for xyz in handslms.landmark:
-                        landmarkX = int(xyz.x * x)
-                        landmarkY = int(xyz.y * y)
-
-                        landmarks.append([landmarkX, landmarkY])
-
                     # Draw landmarks on frames
                     mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
-
-                    # Predict the gesture
-                    prediction = model.predict([landmarks])
-                    gestureID = np.argmax(prediction)
-                    gestureName = gestureNames[gestureID]
-
-                    # print the current gesture to console
-                    print ("Current gesture: " + str(gestureName))
 
             # Resize and reposition the frame
             frame = cv2.resize(frame, (160, 90))
