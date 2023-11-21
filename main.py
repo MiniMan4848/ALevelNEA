@@ -123,11 +123,12 @@ def gameLoop() -> None:
 
     randomHeight = random.randint(0, 331 - coinFrames[0].get_height())
     
-    # Variables used for jumping
+    # Variables used for jumping and crouching
     characterX = 400
     characterY = 331 - run2.get_height()
     jumpCount = 10
     jumping = False
+    crouching = False
 
     # Variables for scoring
     score = 0
@@ -202,69 +203,56 @@ def gameLoop() -> None:
             cv2.moveWindow("Window", 0, 305)
 
         # Logic for crouching with hand gestures #
-        if gestureName == "crouch":
-            # If there is down arrow key input, switch to the crouching frames
-            runningFrames = [crouchedRun1, crouchedRun2]
-
-            # Moves hitbox with crouch
-            runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
-
-        # If not, use the normal running frames and change the hitbox back 
-        else:
-            runningFrames = [run1, run2]
-            runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
-        # Logic for jumping with hand gestures #
-        if fatalCollisionFlag == False and arrowKeyControls == False:
-            # Checking if the character is not already jumping
-            if not (jumping):
-                # Check for input and start jumping process if there is input
-                if gestureName == "jump":
-                    jumping = True
+        if arrowKeyControls == False:
+            if gestureName == "crouch" and handGestureControls == True:
+                crouching = True
             else:
-                if jumpCount >= - 10:
-                    # Does not move the chatacter as multiplying by 1
-                    neg = 1
+                crouching = False
 
-                    # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
-                    if jumpCount < 0:
-                        neg = -1
-
-                    # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
-                    # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
-                    # represents c in the quadratic formula which is the y intercept
-                    characterY -= (jumpCount **2) * 0.5 * neg
-
-                    # Moves hitbox with jump
-                    runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
-
-                    # Freezing the character
-                    runningFrames = [run1, run1]
-
-                    # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
-                    jumpCount -= 1
+            # Logic for jumping with hand gestures #
+            if fatalCollisionFlag == False and arrowKeyControls == False:
+                # Checking if the character is not already jumping
+                if not (jumping):
+                    # Check for input and start jumping process if there is input
+                    if gestureName == "jump":
+                        jumping = True
                 else:
-                    # Jump has finished, resets jumping and jumpCount and starts the running animation again
-                    jumping = False
-                    jumpCount = 10
-                    runningFrames = [run1, run2]
+                    if jumpCount >= - 10:
+                        # Does not move the chatacter as multiplying by 1
+                        neg = 1
+
+                        # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
+                        if jumpCount < 0:
+                            neg = -1
+
+                        # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
+                        # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
+                        # represents c in the quadratic formula which is the y intercept
+                        characterY -= (jumpCount **2) * 0.5 * neg
+
+                        # Moves hitbox with jump
+                        runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
+                        # Freezing the character
+                        runningFrames = [run1, run1]
+
+                        # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
+                        jumpCount -= 1
+                    else:
+                        # Jump has finished, resets jumping and jumpCount and starts the running animation again
+                        jumping = False
+                        jumpCount = 10
+                        runningFrames = [run1, run2]
         
         if handGestureControls == False:
             keys = pygame.key.get_pressed()
 
             # Logic for crouching with arrow keys #
             # Check for down arrow key input 
-            if (keys[pygame.K_DOWN] and arrowKeyControls == True):
-                # If there is down arrow key input, switch to the crouching frames
-                runningFrames = [crouchedRun1, crouchedRun2]
-
-                # Moves hitbox with crouch
-                runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
-
-            # If not, use the normal running frames and change the hitbox back 
+            if keys[pygame.K_DOWN] and arrowKeyControls == True:
+                crouching = True
             else:
-                runningFrames = [run1, run2]
-                runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+                crouching = False
 
             # Logic for jumping with arrow keys #
             # Only be able to jump if the character is alive
@@ -301,6 +289,17 @@ def gameLoop() -> None:
                         jumping = False
                         jumpCount = 10
                         runningFrames = [run1, run2]
+        
+        if crouching == True:
+            # Switch to crouching frames and move hitbox
+            runningFrames = [crouchedRun1, crouchedRun2]
+            runningRect = pygame.Rect(characterX, characterY+13, crouchedRun1.get_width(), crouchedRun1.get_height())
+
+        if crouching == False:
+            # Switch back to normal frames and hitbox
+            runningFrames = [run1, run2]
+            runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
+
 
         # Fills the screen grey
         screen.fill(BGCOL)
