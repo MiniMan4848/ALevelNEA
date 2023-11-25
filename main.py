@@ -4,6 +4,8 @@ import sys
 import random
 import math
 import time
+import threading
+import concurrent.futures
 
 # Computer vision modules
 import cv2
@@ -62,8 +64,6 @@ coinCollisionCount = 0
 
 def gameLoop() -> None: 
     global coinCollisionCount
-    global handGestureControls
-    global arrowKeyControls
 
     # Loading and storing images for running animation, crouching animation and death
     run1 = pygame.image.load("assets/run/run1.png").convert_alpha()
@@ -157,54 +157,19 @@ def gameLoop() -> None:
                 sys.exit()
 
         if handGestureControls == True:
-            # vision #
-            # Read each frame
-            res, frame = cap.read()
-            x, y, z = frame.shape 
-            
-            # vertically flips the frame
-            frame = cv2.flip(frame, 1)
+            # Using threadpool executor to manage a pool of threads and concurrent execution
+            with concurrent.futures.ThreadPoolExecutor() as executor:
 
-            # change frame to RGB
-            frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-            # Get hand landmark prediction, returns result class
-            result = handsConfiguration.process(frameRGB)
-
-            # If a hand is detected
-            if result.multi_hand_landmarks:
-                landmarks = []
-                # Loop through detection and store coordinate in list
-                for handslms in result.multi_hand_landmarks:
-                    for xyz in handslms.landmark:
-                        landmarkX = int(xyz.x * x)
-                        landmarkY = int(xyz.y * y)
-
-                        landmarks.append([landmarkX, landmarkY])
-
-                    # Draw landmarks on frames
-                    mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
-
-                    # Predict the gesture
-                    prediction = model.predict([landmarks])
-                    gestureID = np.argmax(prediction)
-                    gestureName = gestureNames[gestureID]
-
-                    # print the current gesture to console
-                    print ("Current gesture: " + str(gestureName))
-
-            # Resize and reposition the frame
-            frame = cv2.resize(frame, (160, 90))
-
-            # Show the final output
-            cv2.imshow("Window", frame)
-
-            # Move the window
-            cv2.moveWindow("Window", 0, 305)
+                # Submit handGestureRecognition() to be executed in the thread pool
+                f1 = executor.submit(handGestureRecognition)
+                
+                # Get return result of the function (gestureName)
+                # Use this value to control in game actions
+                returnValue = f1.result()
 
         # Logic for crouching with hand gestures #
         if arrowKeyControls == False:
-            if gestureName == "crouch" and handGestureControls == True:
+            if returnValue == "crouch" and handGestureControls == True:
                 crouching = True
             else:
                 crouching = False
@@ -214,7 +179,7 @@ def gameLoop() -> None:
                 # Checking if the character is not already jumping
                 if not jumping:
                     # Check for input and start jumping process if there is input
-                    if gestureName == "jump":
+                    if returnValue == "jump":
                         jumping = True
                     else:
                         jumping = False
@@ -295,8 +260,23 @@ def gameLoop() -> None:
         imageWidth = scaledImage.get_width()
         howMany = (math.ceil((int(width)/int(imageWidth)))) + 1
 
-        # Scroll background speed
-        actualBgSpeed = 10
+        # Setting speeds #
+
+        # Speeds when arrow key controls are selected
+        if arrowKeyControls:
+            actualBgSpeed = 10
+            actualBlobSpeed = 25
+            actualObstacleSpeed = 11
+            actualCoinSpeed = 15
+
+        # Speeds when hand gesture controls are selected
+        if handGestureControls:
+            actualBgSpeed = 25
+            actualBlobSpeed = 60
+            actualObstacleSpeed = 30
+            actualCoinSpeed = 40
+
+        # Make background move
         moveBgSpeed -= actualBgSpeed
 
         # Reset moveBgSpeed
@@ -313,7 +293,6 @@ def gameLoop() -> None:
         timeElapsedForSpawningBlob = currentBlobSpawning - blobTimerForSpawning
 
         # Moving the blob
-        actualBlobSpeed = 25
         moveBlobSpeed -= actualBlobSpeed
 
         # Storing the height's that a blob can spawn at
@@ -348,7 +327,6 @@ def gameLoop() -> None:
         scaledObstacle1 = pygame.transform.scale(obstacle1, (45, 60))
 
         # Moving the obstacle
-        actualObstacleSpeed = 11
         moveObstacleSpeed -= actualObstacleSpeed
 
         # Positioning the obstacle
@@ -377,7 +355,7 @@ def gameLoop() -> None:
         timeElapsedForSpawning = currentCoinTimeForSpawning - coinTimerForSpawning
         
         # Moving and positioning the coin
-        moveCoinSpeed -= 15
+        moveCoinSpeed -= actualCoinSpeed
         coinX = width + moveCoinSpeed
         
         # Move coin's hitbox off screen after a collision
@@ -496,7 +474,7 @@ def gameLoop() -> None:
             coinInterval = 999
 
             # Making everything moving onscreen freeze
-            moveCoinSpeed += 15
+            moveCoinSpeed += actualCoinSpeed
             moveObstacleSpeed += actualObstacleSpeed
             moveBlobSpeed += actualBlobSpeed
             moveBgSpeed += actualBgSpeed
@@ -588,10 +566,12 @@ def gameLoop() -> None:
                 #number here is (the time the shield is active for in total)-(the time of invulnerability)
                 shieldTimer = currentShieldTimer-29.9
 
-        # Makes the game run at 60 FPS
-        # 60 for arrow, higher for hands, each frame for hands takes longer so need higher fps
-        pygame.time.Clock().tick(60)
-        pygame.display.update()
+        if handGestureControls:
+            pygame.time.Clock().tick()
+            pygame.display.update()
+        if arrowKeyControls:
+            pygame.time.Clock().tick(60)
+            pygame.display.update()
 
 def mainMenu() -> None:
     # importing classes used in the main menu to avoid a circular import error
@@ -782,7 +762,58 @@ def mainMenu() -> None:
         pygame.time.Clock().tick(60)
         pygame.display.update()
 
-def highScore(helpButton) -> None:
+def handGestureRecognition() -> str:
+    
+    # vision #
+    # Read each frame
+    res, frame = cap.read()
+    x, y, _ = frame.shape 
+
+    # vertically flips the frame
+    frame = cv2.flip(frame, 1)
+
+    # change frame to RGB
+    frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Get hand landmark prediction, returns result class
+    result = handsConfiguration.process(frameRGB)
+
+    # If a hand is detected
+    if result.multi_hand_landmarks:
+        landmarks = []
+        # Loop through detection and store coordinate in list
+        for handslms in result.multi_hand_landmarks:
+            for xyz in handslms.landmark:
+                landmarkX = int(xyz.x * x)
+                landmarkY = int(xyz.y * y)
+
+                landmarks.append([landmarkX, landmarkY])
+
+            # Draw landmarks on frames
+            mpDraw.draw_landmarks(frame, handslms, mpHands.HAND_CONNECTIONS)
+
+            # Predict the gesture
+            prediction = model.predict([landmarks])
+            gestureName = gestureNames[np.argmax(prediction)]
+
+            # print the current gesture to console
+            print (f"Current gesture: {gestureName}")
+
+            return gestureName
+            
+        # Resize and reposition the frame
+        frame = cv2.resize(frame, (160, 90))
+
+        # Show the final output
+        cv2.imshow("Window", frame)
+
+        # Move the window
+        cv2.moveWindow("Window", 0, 305)
+
+        # Delay to decrease fps
+        cv2.waitKey(125)
+
+def highScore(helpButton):
     # Opens and reads the highscore text file
     file = open("highscore.txt", "r")
     fileVal = file.read()
