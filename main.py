@@ -57,8 +57,8 @@ fonts = {
 }
 
 # Variables used in multiple functions
-arrowKeyControls = False
-handGestureControls = True
+arrowKeyControls = True
+handGestureControls = False
 
 coinCollisionCount = 0
 
@@ -126,7 +126,11 @@ def gameLoop() -> None:
     # Variables used for jumping and crouching
     characterX = 400
     characterY = 331 - run2.get_height()
+
+    # What the character is moving by
     jumpCount = 10
+
+    # If character is jumping
     jumping = False
     crouching = False
 
@@ -219,7 +223,7 @@ def gameLoop() -> None:
 
         # If up arrow was pressed or jump gesture was made
         if jumping == True:
-            if jumpCount >= - 10:
+            if jumpCount >= -10:
                 # Does not move the chatacter as multiplying by 1
                 neg = 1
 
@@ -230,7 +234,12 @@ def gameLoop() -> None:
                 # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
                 # the value, the smaller the jump, 0.5 is the right amount. Neg moves character downwards as it is a negative value and it
                 # represents c in the quadratic formula which is the y intercept
-                characterY -= (jumpCount **2) * 0.5 * neg
+
+                # Moving by jumpcount(10) squared but too much so half, negative makes it move down
+                if handGestureControls:
+                    characterY -= (jumpCount **2) * 0.5 * neg * 2
+                if arrowKeyControls:
+                    characterY -= (jumpCount **2) * 0.5 * neg 
 
                 # Moves hitbox with jump
                 runningRect = pygame.Rect(characterX, characterY, run1.get_width(), run1.get_height())
@@ -239,7 +248,10 @@ def gameLoop() -> None:
                 runningFrames = [run1, run1]
 
                 # Decrement jumpcount so the y value slowly does not change by anything once jumpCount has reached 0
-                jumpCount -= 1
+                if handGestureControls:
+                    jumpCount -= 2
+                if arrowKeyControls:
+                    jumpCount -= 1
             else:
                 # Jump has finished, resets jumping and jumpCount and starts the running animation again
                 jumping = False
