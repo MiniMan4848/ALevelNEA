@@ -62,6 +62,9 @@ handGestureControls = False
 
 coinCollisionCount = 0
 
+# Cursor image
+cursor = pygame.image.load("assets/cursor.png")
+
 def gameLoop() -> None: 
     global coinCollisionCount
 
@@ -496,6 +499,7 @@ def gameLoop() -> None:
             fatalCollisionFlag = True
             
         if fatalCollisionFlag == True:
+
             if deathSoundFlag:
                 pygame.mixer.Sound.play(deathSound)
                 deathSoundFlag = False
@@ -529,6 +533,10 @@ def gameLoop() -> None:
             deathButton = Button("MAIN MENU", 185, (255, 60, 46), (255, 84, 71), fonts["Medium"], 25, 10, True)
             deathButton.drawButton()
             deathButton.isHovered()
+
+            # Change cursor
+            mousePos = pygame.mouse.get_pos()
+            screen.blit(cursor, mousePos)
             
             if deathButton.isClicked():
                 mainMenu()
@@ -642,6 +650,9 @@ def mainMenu() -> None:
     settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, True)
     helpButton = Button("HELP", 375, (242, 225, 36), (255, 192, 20), fonts["Tiny"], 10, 5, True)
 
+    # Remove default cursor
+    pygame.mouse.set_visible(False)
+
     # Loop for the main menu
     while True:
         for event in pygame.event.get():
@@ -666,6 +677,20 @@ def mainMenu() -> None:
         screen.fill(BGCOL)
         floor()
 
+        # Calling the drawing and hovering methods to the play, help and settings button
+        playButton.drawButton()
+        playButton.isHovered()
+
+        settingsButton.drawButton()
+        settingsButton.isHovered()
+
+        helpButton.drawButton()
+        helpButton.isHovered()
+
+        # Change cursor
+        mousePos = pygame.mouse.get_pos()
+        screen.blit(cursor, mousePos)
+
         # Idle animation code being written here as it needs to be inside a while loop to keep updating the animation
         # Gets the current time in ms
         currentTime = time.time()
@@ -686,16 +711,6 @@ def mainMenu() -> None:
 
         # Draws the frame to the screen
         screen.blit(frames[blinkingFrameIndex], (400, 331 - frames[blinkingFrameIndex].get_height()))
-
-        # Calling the drawing and hovering methods to the play, help and settings button
-        playButton.drawButton()
-        playButton.isHovered()
-
-        settingsButton.drawButton()
-        settingsButton.isHovered()
-
-        helpButton.drawButton()
-        helpButton.isHovered()
 
         # Puts the main menu text at the top of the screen
         mainMenuText = fonts["Header"].render("MAIN MENU", True, ("white"))
@@ -796,6 +811,35 @@ def mainMenu() -> None:
             # Disable the play and settings button when the popup is open
             playButton = Button("PLAY", 155, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
             settingsButton = Button("SETTINGS", 240, (242, 225, 36), (255, 192, 20), fonts["Smaller"], 20, 5, False)
+
+            # Rectangle formatting
+            helpTextRectX = ((width - 455)//2) + 5
+            helpTextRectY = (height - 410)//22 + 50
+            helpTextRect = pygame.Rect(helpTextRectX, helpTextRectY, 455, 360)
+
+            # Draw the help text to the screen
+            Title1 = fonts["Medium"].render(("Hand Gesture Controls"), True, (255, 119, 0))
+            openHand = fonts["Tiny"].render(("Show your palm to run"), True, (255, 174, 0))
+            fist = fonts["Tiny"].render(("Make a fist to jump"), True, (255, 174, 0))
+            peace = fonts["Tiny"].render(("Do a peace sign to crouch"), True, (255, 174, 0))
+
+            Title2 = fonts["Medium"].render(("Arrow Key Controls"), True, (119, 0, 252))
+            wUp = fonts["Tiny"].render(("Up arrow or W key to jump"), True, (157, 70, 252))
+            sDown = fonts["Tiny"].render(("Down arrow or S key to crouch"), True, (157, 70, 252))
+
+
+            # Get the center position of the rectangle
+            centerX = helpTextRect.centerx - Title1.get_width() // 2
+
+            screen.blit(Title1, (centerX, 85))
+            screen.blit(openHand, (centerX, 135))
+            screen.blit(fist, (centerX, 175))
+            screen.blit(peace, (centerX, 215))
+
+            screen.blit(Title2, (centerX, 265))
+            screen.blit(wUp, (centerX, 315))
+            screen.blit(sDown, (centerX, 355))
+
 
         # Makes the game run at 60 FPS
         pygame.time.Clock().tick(60)
