@@ -150,8 +150,17 @@ def gameLoop() -> None:
     
     shieldActive = False
 
+    # Sound effects
+    powerupSound = pygame.mixer.Sound("assets/sounds/powerup.wav")
+    jumpSound = pygame.mixer.Sound("assets/sounds/jump.wav")
+    deathSound = pygame.mixer.Sound("assets/sounds/death.wav")
+    scoreSound = pygame.mixer.Sound("assets/sounds/500 score.mp3")
+    
     # Hand gesture variables
     gestureName = ""
+
+    jumpSoundFlag = True
+    deathSoundFlag = True
 
     # Loop for the game loop
     while True:
@@ -193,7 +202,7 @@ def gameLoop() -> None:
             keys = pygame.key.get_pressed()
             
             # Check for down arrow key input 
-            if keys[pygame.K_DOWN] and arrowKeyControls == True:
+            if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and arrowKeyControls == True:
                 crouching = True
             else:
                 crouching = False
@@ -204,7 +213,7 @@ def gameLoop() -> None:
                 # Checking if the character is not already jumping
                 if not jumping:
                     # Check for input and start jumping process if there is input
-                    if keys[pygame.K_UP] and arrowKeyControls == True:
+                    if (keys[pygame.K_UP] or keys[pygame.K_w]) and arrowKeyControls == True:
                         jumping = True
                     else:
                         jumping = False
@@ -223,12 +232,17 @@ def gameLoop() -> None:
 
         # If up arrow was pressed or jump gesture was made
         if jumping == True:
+            if jumpSoundFlag:
+                pygame.mixer.Sound.play(jumpSound)
+                jumpSoundFlag = False
+
             if jumpCount >= -10:
                 # Does not move the chatacter as multiplying by 1
                 neg = 1
 
                 # If jumpCount is a negative number which occurs on 'jumpCount -=1', this moves character down
                 if jumpCount < 0:
+
                     neg = -1
 
                 # Model's the jump on a quadratic, change character's y pos by this value. 0.5 could represent the jump height. The lower
@@ -257,6 +271,8 @@ def gameLoop() -> None:
                 jumping = False
                 jumpCount = 10
                 runningFrames = [run1, run2]
+                # Reset to true for the next jump
+                jumpSoundFlag = True
         
         # Fills the screen grey
         screen.fill(BGCOL)
@@ -443,6 +459,10 @@ def gameLoop() -> None:
             file = open("highscore.txt", "w")
             file.write(str(score))
 
+        # Play the sound
+        if score%500 == 0:
+            pygame.mixer.Sound.play(scoreSound)
+
         # # Only be able to imacrement score if the character is alive
         if fatalCollisionFlag == False:
             score = math.ceil(timeElapsedForScoring * 10)
@@ -476,6 +496,10 @@ def gameLoop() -> None:
             fatalCollisionFlag = True
             
         if fatalCollisionFlag == True:
+            if deathSoundFlag:
+                pygame.mixer.Sound.play(deathSound)
+                deathSoundFlag = False
+
             from classes.button import Button
             
             runningFrames = [deathImage, deathImage]
@@ -541,6 +565,9 @@ def gameLoop() -> None:
 
             # Make shield active, reset the timer and coin count when hitting 5 coins
             if coinCollisionCount >= 5:
+                # Play the sound effect
+                pygame.mixer.Sound.play(powerupSound)
+
                 shieldActive = True
                 shieldTimer = currentShieldTimer
                 coinCollisionCount = 0
