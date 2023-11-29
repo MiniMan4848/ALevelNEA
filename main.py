@@ -766,6 +766,10 @@ def mainMenu() -> None:
             arrows.drawButton()
             arrows.isHovered()
 
+            # Change cursor
+            mousePos = pygame.mouse.get_pos()
+            screen.blit(cursor, mousePos)
+
         if handGestureControls == True:
             # vision #
             # Read each frame
@@ -839,6 +843,10 @@ def mainMenu() -> None:
             screen.blit(Title2, (centerX, 265))
             screen.blit(wUp, (centerX, 315))
             screen.blit(sDown, (centerX, 355))
+
+            # Change cursor
+            mousePos = pygame.mouse.get_pos()
+            screen.blit(cursor, mousePos)
 
 
         # Makes the game run at 60 FPS
