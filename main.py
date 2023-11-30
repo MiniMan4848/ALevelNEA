@@ -35,7 +35,6 @@ cap = cv2.VideoCapture(0)
 f = open("HandTrack/gesture.names" , "r")
 gestureNames = f.read().split('\n')
 f.close()
-print(gestureNames)
 
 # Creating the game window, 32:9 aspect ratio
 screen = pygame.display.set_mode()
@@ -880,9 +879,6 @@ def handGestureRecognition() -> str:
             # Predict the gesture
             prediction = model.predict([landmarks])
             gestureName = gestureNames[np.argmax(prediction)]
-
-            # print the current gesture to console
-            print (f"Current gesture: {gestureName}")
 
             return gestureName
             
