@@ -149,7 +149,7 @@ def gameLoop() -> None:
     coinCollisionFlag = False
     
     coinRespawnInterval = 3
-    coinCollisionCount = 4
+    coinCollisionCount = 0
     
     shieldActive = False
 
@@ -476,12 +476,6 @@ def gameLoop() -> None:
             # On my screen width is 1440 and height/2 is 410, want height at 20 so do 1440/20 which
             # is 72 and so width/72 == 20. Same principle for the height.
             screen.blit(scoreText, (width/72, ((height/2)/10)))
-
-        # Draw Hitboxes
-        pygame.draw.rect(screen, (255, 0, 0), coinRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), runningRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), obstacleRect, 2)
-        pygame.draw.rect(screen, (255, 0, 0), blobRect, 2)
 
         # Logic for collisions #
         
